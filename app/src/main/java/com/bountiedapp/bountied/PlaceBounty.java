@@ -6,6 +6,8 @@ package com.bountiedapp.bountied;
 public class PlaceBounty {
 
     public PlaceBounty() {
+
+
         
     }
 }
