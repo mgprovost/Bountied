@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">Bountied</string>
     <string name="action_settings">Settings</string>
+    <string name="action_hunt">bounty_hunt</string>
+    <string name="place_bounty">place bounty</string>
+    <string name="bounty_progress">progress</string>
+    <string name="title_activity_place_bounty">PlaceBounty</string>
+    <string name="title_activity_view_bounty">ViewBountyActivity</string>
 </resources>
