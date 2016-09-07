@@ -2,23 +2,18 @@ package com.bountiedapp.bountied.ui;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
+import android.widget.ImageView;
+import android.widget.TextView;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
+import com.bountiedapp.bountied.DividerItemDecoration;
 import com.bountiedapp.bountied.DownloadBountyList;
-import com.bountiedapp.bountied.NetworkSingleton;
 import com.bountiedapp.bountied.R;
 import com.bountiedapp.bountied.adpter.BountyHuntAdapter;
 import com.bountiedapp.bountied.model.BountyHuntListItem;
@@ -28,16 +23,14 @@ import org.json.JSONException;
 
 import java.util.ArrayList;
 
-public class HomeActivity extends AppCompatActivity implements BountyHuntAdapter.ItemClickCallback {
+public class BountyHuntCatagoryActivity extends AppCompatActivity implements BountyHuntAdapter.ItemClickCallback {
 
-    // endpoint to send information to the server
-    private final String M_URL = "http://192.168.1.8:3000/bountylistdownload";
+    private static BountyHuntAdapter mBountyHuntAdapter;
+    private static RecyclerView recyclerView;
+    private ArrayList mBountyHuntListData;
+    private Gps gps;
 
-    // constant used when returning to the activity from the camera intent
-    private int REQUEST_IMAGE_CAPTURE = 1;
-
-    // these are just static strings used for the sending
-    // data from this activity to the detail activity
+    // these are just static strings used for the intents
     private static final String BUNDLE_EXTRAS = "BUNDLE_EXTRAS";
     private static final String EXTRA_TITLE = "EXTRA_TITLE";
     private static final String EXTRA_DESCRIPTION = "EXTRA_DESCRIPTION";
@@ -47,62 +40,69 @@ public class HomeActivity extends AppCompatActivity implements BountyHuntAdapter
     private static final String EXTRA_LAT = "EXTRA_LAT";
     private static final String EXTRA_LNG = "EXTRA_LNG";
 
-    // bounty hunt adapter is to be used by the recycler view to set the view
-    // based on the information it's given
-    private static BountyHuntAdapter mBountyHuntAdapter;
 
-    // recycler view is used to display all the "cards" produced by the data
-    private static RecyclerView mRecyclerView;
+    private static final String EXTRA_CATEGORY = "EXTRA_CATEGORY";
 
-    // will hold the returned data from the server when it responds
-    private ArrayList mBountyHuntListData;
+    private int REQUEST_IMAGE_CAPTURE = 1;
 
-    private Gps mGPS;
-    private String mBountyID;
-    private String mPlacerID;
+    private final String M_URL = "http://192.168.1.8:3000/bountylistcategorydownload";
 
-    // UI objects
-    private Button mHuntButton;
-    private Button mSaveButton;
+    private String bountyID;
+    private String placerID;
+
+    private Button huntButton;
+    private Button saveButton;
+
+    private TextView mNoBountyTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-        // set the view from xml file
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home);
+        setContentView(R.layout.activity_bounty_hunt_catagory);
 
-        // set the toolbar from xml file
+        // set the toolbar from the xml
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // instantiate a new GPS object to use before going out to server
-        mGPS = new Gps(this);
+        // May need to load this in the launch screen initially
+        // Load a gps object which will begin updating coordinates as they become available
+        gps = new Gps(this);
 
-        mRecyclerView = (RecyclerView)findViewById(R.id.recycler_list);
+//        // this is a method that allows older versions of
+//        // android to display a return arrow to appear
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        // go get the data from the server
-        getListData(this);
+        // get the category that the user clicked from the previous activity
+        String catagory = getIntent().getStringExtra(EXTRA_CATEGORY);
 
-     }
+        // set that category as the title of the screen
+        setTitle(catagory);
 
-    // used to display the main menu on top of the screen
+        // get the recycler view from the xml
+        recyclerView = (RecyclerView)findViewById(R.id.recycler_list);
+
+        mNoBountyTextView = (TextView) findViewById(R.id.hunt_catagory_no_bounty_text);
+
+        // get all the relevant list data and load it into the recycler view assigned above
+        getListData(this, catagory);
+    }
+
+    // creates the options menu of icons in the upper right hand corner
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // inflate the menu, this adds items to the action bar if it is present.
+        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_home, menu);
         return true;
     }
 
-    // Handle action bar item clicks here. The action bar will
-    // automatically handle clicks on the Home/Up button, so long
-    // as you specify a parent activity in AndroidManifest.xml.
+    // controls what happens when the icons in the menu (upper right hand corner) are clicked
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        // the following intents serve to start different activities as buttons are pressed
         switch(id) {
             case R.id.action_place:
                 Intent placeIntent = new Intent(this, PlaceBounty.class);
@@ -128,46 +128,50 @@ public class HomeActivity extends AppCompatActivity implements BountyHuntAdapter
         return super.onOptionsItemSelected(item);
     }
 
-    public void getListData(final Context context) {
+    public void getListData(final Context context, final String catagory) {
 
         // sets the last know user coords for gps
-        mGPS.setLastKnownLatLng(this);
+        gps.setLastKnownLatLng(this);
 
         // pull the users lat and lng coordinates to use them in the downloading of the relevant list
-        String mLat = Double.toString(mGPS.getmLat());
-        String mLng = Double.toString(mGPS.getmLng());
+        String mLat = Double.toString(gps.getmLat());
+        String mLng = Double.toString(gps.getmLng());
+
+        System.out.println("Latitude is:  " + mLat);
+        System.out.println("Longitude is:  " + mLng);
 
         // stops the gps from listening for new coords which is costly for battery life
-        mGPS.stopGps(this);
+        gps.stopGps(this);
 
-        // just a placeholder, since we aren't looking for a specific catagory
-        final String CATEGORY = "anything";
 
-        // network request to download a list of random bounties with no specified catagory
-        // it will however use the location of the user and parse out bounties the user
-        // should not see because of the radius that the bounty placer specified
         try {
             DownloadBountyList downloadBountyList = new DownloadBountyList();
-            downloadBountyList.download(this, M_URL, CATEGORY, mLat, mLng, new DownloadBountyList.VolleyCallback() {
+            downloadBountyList.download(this, M_URL, catagory, mLat, mLng, new DownloadBountyList.VolleyCallback() {
                 @Override
                 public void onSuccess(ArrayList<BountyHuntListItem> result) {
 
-                    // this is the returned data from the server
                     mBountyHuntListData = result;
 
-                    // layout manager takes care of the look of the layout
-                    mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
 
-                    // pass the returned data from the server to our adapter
-                    mBountyHuntAdapter = new BountyHuntAdapter(result, context);
+                    // if there is data for the specific catagory requested, set it in adapter
+                    if (!result.toString().equals("[]")) {
 
-                    // pass our custom adapter, after it has been loaded with data, to the view
-                    mRecyclerView.setAdapter(mBountyHuntAdapter);
+                        recyclerView.setLayoutManager(new LinearLayoutManager(context));
 
-                    // this basically says to Adapter when itemClickCallBack is called
-                    // I will (this Activity) will handle it
-                    mBountyHuntAdapter.setItemClickCallback(HomeActivity.this);
+                        mBountyHuntAdapter = new BountyHuntAdapter(result, context);
 
+                        recyclerView.setAdapter(mBountyHuntAdapter);
+
+                        // this basically says to Adapter when itemClickCallBack is called
+                        // ill (this Activity) will handle it
+                        mBountyHuntAdapter.setItemClickCallback(BountyHuntCatagoryActivity.this);
+
+                    }
+                    // otherwise display a "no bounties here" image to inform the user
+                    else {
+                        mNoBountyTextView.setText("Sorry, no bounties have been placed in the " +
+                                                    catagory + " catagory yet.");
+                    }
                 }
             });
 
@@ -176,18 +180,14 @@ public class HomeActivity extends AppCompatActivity implements BountyHuntAdapter
         }
     }
 
-    // if any of the cards, any part of the card except the button gets clicked, do the following
     @Override
     public void onItemClick(int position) {
-
-        // from the returned server data, get a single bounty hunt item / info associated with that item
         BountyHuntListItem bountyHuntListItem = (BountyHuntListItem) mBountyHuntListData.get(position);
 
-        // intent will be used to open the detail activity if card is clicked
         Intent intent = new Intent(this, HomeDetailActivity.class);
 
-        // put all the following info in a bundle to send it to detail activity
         Bundle extras = new Bundle();
+
         extras.putString(EXTRA_TITLE, bountyHuntListItem.getmTitle());
         extras.putString(EXTRA_DESCRIPTION, bountyHuntListItem.getmDescription());
         extras.putString(EXTRA_BOUNTY, bountyHuntListItem.getmBounty());
@@ -196,45 +196,37 @@ public class HomeActivity extends AppCompatActivity implements BountyHuntAdapter
         extras.putString(EXTRA_LAT, bountyHuntListItem.getmLat());
         extras.putString(EXTRA_LNG, bountyHuntListItem.getmLng());
 
+        System.out.println(extras.toString());
+
         intent.putExtra(BUNDLE_EXTRAS, extras);
         startActivity(intent);
     }
 
-    // called when user clicks "hunt" on the bounty card
     @Override
     public void onHuntClick(int position) {
-
         // this will have all the info to the most recently clicked "bounty card"
         BountyHuntListItem bountyHuntListItem = (BountyHuntListItem) mBountyHuntListData.get(position);
 
         // imageUrl is same as bountyID, also get the placerID
-        // need these for when the camera returns to this activity
-        mBountyID = bountyHuntListItem.getmImageUrl();
-        mPlacerID = bountyHuntListItem.getmPlacerID();
+        bountyID = bountyHuntListItem.getmImageUrl();
+        placerID = bountyHuntListItem.getmPlacerID();
 
         // create a new camera instance and start the camera
-        mHuntButton = new Button();
-        mHuntButton.startCameraIntent(this);
+        huntButton = new Button();
+        huntButton.startCameraIntent(this);
     }
 
-    // called when clicked save button on card, saves a bounty to a users
     @Override
     public void onSaveClick(int position) {
-
         // this will have all the info to the most recently clicked "bounty card"
         BountyHuntListItem bountyHuntListItem = (BountyHuntListItem) mBountyHuntListData.get(position);
 
-        // imageUrl is same as bountyID
-        mBountyID = bountyHuntListItem.getmImageUrl();
+        bountyID = bountyHuntListItem.getmImageUrl();
 
-        // this will save the bountyID of the card that the user clicked on to internal memory
-        // it is saved to a dedicated internal file that keeps track of all saved bounty hunts
-        mSaveButton = new Button();
-        mSaveButton.saveBounty(this, mBountyID);
+        saveButton = new Button();
+        saveButton.saveBounty(this, bountyID);
     }
 
-
-    // used on return from an outside activity, in this case it is used when returning from camera
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -242,11 +234,9 @@ public class HomeActivity extends AppCompatActivity implements BountyHuntAdapter
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
 
             // upload the picture just taken from the camera to the server
-            mHuntButton.uploadCameraPicture(this, mPlacerID, mBountyID);
+            huntButton.uploadCameraPicture(this, placerID, bountyID);
         }
-        else {
-            Toast.makeText(this, "A camera issue has been detected.", Toast.LENGTH_LONG).show();
-        }
+
     }
 
 }

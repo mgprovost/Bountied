@@ -1,9 +1,14 @@
 <resources>
-    <string name="app_name">Bountied</string>
+    <string name="app_name">BOUNTIED</string>
     <string name="action_settings">Settings</string>
     <string name="action_hunt">bounty_hunt</string>
     <string name="place_bounty">place bounty</string>
-    <string name="bounty_progress">progress</string>
-    <string name="title_activity_place_bounty">PlaceBounty</string>
-    <string name="title_activity_view_bounty">ViewBountyActivity</string>
+    <string name="bounty_hunts_in_progress">HUNTS IN PROGRESS</string>
+    <string name="bounty_placed_in_progress">PLACED BOUNTIES</string>
+    <string name="title_activity_place_bounty">PLACE A BOUNTY</string>
+    <string name="title_activity_view_bounty">BOUNTY HUNT CATEGORIES</string>
+    <string name="title_activity_login">Login</string>
+    <string name="title_activity_register">Register</string>
+    <string name="signup"><u>Signup</u></string>
+    <string name="login"><u>Login</u></string>
 </resources>

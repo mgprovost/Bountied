@@ -4,20 +4,27 @@
     tools:context=".MainActivity">
     <item
         android:id="@+id/action_hunt"
-        android:icon="@drawable/ic_action_hunt"
         android:orderInCategory="100"
-        android:title="@string/action_hunt"
+        android:title="HUNT"
         app:showAsAction="always" />
     <item
         android:id="@+id/action_place"
         android:orderInCategory="100"
-        android:icon="@drawable/ic_action_place"
-        android:title="@string/place_bounty"
+        android:title="PLACE"
         app:showAsAction="always" />
     <item
-        android:id="@+id/action_progress"
+        android:id="@+id/action_hunts"
         android:orderInCategory="100"
-        android:icon="@drawable/ic_action_progress"
-        android:title="@string/bounty_progress"
-        app:showAsAction="always" />
+        android:title="SAVED HUNTS"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_placed"
+        android:orderInCategory="100"
+        android:title="PLACED BOUNTIES"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_accepted"
+        android:orderInCategory="100"
+        android:title="ACCEPTED BOUNTIES"
+        app:showAsAction="never" />
 </menu>

@@ -2,9 +2,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.bountiedapp.bountied">
 
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="true" />
 
     <application
         android:allowBackup="true"
@@ -13,8 +18,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".ui.HomeActivity"
-            android:label="@string/app_name"
+            android:name=".ui.Register"
+            android:label="Bountied"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,7 +28,15 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".PlaceBounty"
+            android:name=".ui.Login"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".ui.HomeActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".ui.PlaceBounty"
             android:label="@string/title_activity_place_bounty"
             android:parentActivityName=".ui.HomeActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -32,7 +45,7 @@
                 android:value=".ui.HomeActivity" />
         </activity>
         <activity
-            android:name=".ViewBountyActivity"
+            android:name=".ui.BountyHuntActivity"
             android:label="@string/title_activity_view_bounty"
             android:parentActivityName=".ui.HomeActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -40,7 +53,89 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.HomeActivity" />
         </activity>
-        <activity android:name=".ui.HomeDetailActivity"></activity>
+        <activity
+            android:name=".ui.HomeDetailActivity"
+            android:label="BOUNTY DETAIL"
+            android:parentActivityName=".ui.HomeActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.HomeActivity" />
+        </activity>
+        <activity
+            android:name=".ui.HuntsInProgress"
+            android:label="@string/bounty_hunts_in_progress"
+            android:parentActivityName=".ui.HomeActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.HomeActivity" />
+        </activity>
+        <activity
+            android:name=".ui.HuntsInProgressDetail"
+            android:label="BOUNTY DETAIL"
+            android:parentActivityName=".ui.HuntsInProgress"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.HuntsInProgress" />
+        </activity>
+        <activity
+            android:name=".ui.BountyHuntCatagoryActivity"
+            android:label="Single Catagory"
+            android:parentActivityName=".ui.BountyHuntActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.BountyHuntActivity" />
+        </activity>
+        <activity
+            android:name=".ui.BountiesPlaced"
+            android:label="@string/bounty_placed_in_progress"
+            android:parentActivityName=".ui.HomeActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.HomeActivity" />
+        </activity>
+        <activity
+            android:name=".ui.BountiesFound"
+            android:label="POSSIBLE FINDS"
+            android:parentActivityName=".ui.BountiesPlaced"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.BountiesPlaced" />
+        </activity>
+        <activity
+            android:name=".ui.BountiesAccepted"
+            android:label="ACCEPTED BOUNTIES"
+            android:parentActivityName=".ui.HomeActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.HomeActivity" />
+        </activity>
+        <activity
+            android:name=".ui.FullImageActivity"
+            android:label="FULL IMAGE"
+            android:parentActivityName=".ui.BountiesFound"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.BountiesFound" />
+        </activity>
+
+        <service android:name=".MyFirebaseMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <service android:name=".MyFirebaseInstanceIDService">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>
