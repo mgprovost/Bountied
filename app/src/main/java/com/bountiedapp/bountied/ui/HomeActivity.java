@@ -7,18 +7,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
+import com.bountiedapp.bountied.Button;
 import com.bountiedapp.bountied.DownloadBountyList;
-import com.bountiedapp.bountied.NetworkSingleton;
 import com.bountiedapp.bountied.R;
 import com.bountiedapp.bountied.adpter.BountyHuntAdapter;
 import com.bountiedapp.bountied.model.BountyHuntListItem;
@@ -79,6 +73,7 @@ public class HomeActivity extends AppCompatActivity implements BountyHuntAdapter
         // instantiate a new GPS object to use before going out to server
         mGPS = new Gps(this);
 
+        // get a reference to the recycler view in the xml
         mRecyclerView = (RecyclerView)findViewById(R.id.recycler_list);
 
         // go get the data from the server
@@ -128,14 +123,15 @@ public class HomeActivity extends AppCompatActivity implements BountyHuntAdapter
         return super.onOptionsItemSelected(item);
     }
 
+    // grabs the list of data from the network
     public void getListData(final Context context) {
 
         // sets the last know user coords for gps
         mGPS.setLastKnownLatLng(this);
 
         // pull the users lat and lng coordinates to use them in the downloading of the relevant list
-        String mLat = Double.toString(mGPS.getmLat());
-        String mLng = Double.toString(mGPS.getmLng());
+        String mLat = Double.toString(mGPS.getLat());
+        String mLng = Double.toString(mGPS.getLng());
 
         // stops the gps from listening for new coords which is costly for battery life
         mGPS.stopGps(this);
@@ -165,7 +161,7 @@ public class HomeActivity extends AppCompatActivity implements BountyHuntAdapter
                     mRecyclerView.setAdapter(mBountyHuntAdapter);
 
                     // this basically says to Adapter when itemClickCallBack is called
-                    // I will (this Activity) will handle it
+                    // I (this Activity) will handle it
                     mBountyHuntAdapter.setItemClickCallback(HomeActivity.this);
 
                 }
@@ -188,13 +184,13 @@ public class HomeActivity extends AppCompatActivity implements BountyHuntAdapter
 
         // put all the following info in a bundle to send it to detail activity
         Bundle extras = new Bundle();
-        extras.putString(EXTRA_TITLE, bountyHuntListItem.getmTitle());
-        extras.putString(EXTRA_DESCRIPTION, bountyHuntListItem.getmDescription());
-        extras.putString(EXTRA_BOUNTY, bountyHuntListItem.getmBounty());
-        extras.putString(EXTRA_IMAGEURL, bountyHuntListItem.getmImageUrl());
-        extras.putString(EXTRA_PLACERID, bountyHuntListItem.getmPlacerID());
-        extras.putString(EXTRA_LAT, bountyHuntListItem.getmLat());
-        extras.putString(EXTRA_LNG, bountyHuntListItem.getmLng());
+        extras.putString(EXTRA_TITLE, bountyHuntListItem.getTitle());
+        extras.putString(EXTRA_DESCRIPTION, bountyHuntListItem.getDescription());
+        extras.putString(EXTRA_BOUNTY, bountyHuntListItem.getBounty());
+        extras.putString(EXTRA_IMAGEURL, bountyHuntListItem.getImageUrl());
+        extras.putString(EXTRA_PLACERID, bountyHuntListItem.getPlacerID());
+        extras.putString(EXTRA_LAT, bountyHuntListItem.getLat());
+        extras.putString(EXTRA_LNG, bountyHuntListItem.getLng());
 
         intent.putExtra(BUNDLE_EXTRAS, extras);
         startActivity(intent);
@@ -209,8 +205,8 @@ public class HomeActivity extends AppCompatActivity implements BountyHuntAdapter
 
         // imageUrl is same as bountyID, also get the placerID
         // need these for when the camera returns to this activity
-        mBountyID = bountyHuntListItem.getmImageUrl();
-        mPlacerID = bountyHuntListItem.getmPlacerID();
+        mBountyID = bountyHuntListItem.getImageUrl();
+        mPlacerID = bountyHuntListItem.getPlacerID();
 
         // create a new camera instance and start the camera
         mHuntButton = new Button();
@@ -225,7 +221,7 @@ public class HomeActivity extends AppCompatActivity implements BountyHuntAdapter
         BountyHuntListItem bountyHuntListItem = (BountyHuntListItem) mBountyHuntListData.get(position);
 
         // imageUrl is same as bountyID
-        mBountyID = bountyHuntListItem.getmImageUrl();
+        mBountyID = bountyHuntListItem.getImageUrl();
 
         // this will save the bountyID of the card that the user clicked on to internal memory
         // it is saved to a dedicated internal file that keeps track of all saved bounty hunts

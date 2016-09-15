@@ -1,8 +1,7 @@
 package com.bountiedapp.bountied.model;
 
-/**
- * Created by mprovost on 8/12/2016.
- */
+// simple class to hold the data for potential found bounties
+
 public class FoundBounty {
 
     private String placerID;
@@ -65,7 +64,9 @@ public class FoundBounty {
         return lng;
     }
 
-    public void setLng(String lng) { this.lng = lng; }
+    public void setLng(String lng) {
+        this.lng = lng;
+    }
 
     @Override
     public String toString() {

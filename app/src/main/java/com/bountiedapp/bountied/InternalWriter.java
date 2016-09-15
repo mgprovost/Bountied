@@ -1,13 +1,13 @@
 package com.bountiedapp.bountied;
 
 import android.content.Context;
-import android.support.v7.app.AppCompatActivity;
 
 import java.io.FileOutputStream;
 
-/**
- * Created by mprovost on 8/11/2016.
- */
+/*********************************************************************
+ * InternalWriter was created to easliy write data to internal memory
+ *********************************************************************/
+
 public class InternalWriter {
 
     private Context mContext;
@@ -16,7 +16,6 @@ public class InternalWriter {
         mContext = context;
     }
 
-    // put the id in internal memory
     public void writeToMemory(final String filename, String stringToWrite) {
 
         FileOutputStream fileOutputStream;

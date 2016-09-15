@@ -17,16 +17,20 @@ import java.util.ArrayList;
 
 public class BountyHuntActivity extends AppCompatActivity {
 
+    // list to store the string categories in
     ArrayList mCatagoryList;
 
-    // these are just static strings used for the intents
+    // static strings used for the intent
     private static final String EXTRA_CATEGORY = "EXTRA_CATEGORY";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        // set the view from xml file
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bounty_hunt);
 
+        // set the toolbar from xml file
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -35,7 +39,7 @@ public class BountyHuntActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 
-        // download the catagory list here
+        // add any catagories to list here
         mCatagoryList = new ArrayList<String>();
         mCatagoryList.add("PEOPLE");
         mCatagoryList.add("PLACES");
@@ -48,16 +52,20 @@ public class BountyHuntActivity extends AppCompatActivity {
         mCatagoryList.add("RESTURANTS/BARS");
         mCatagoryList.add("SERVICES");
 
+        // create a generic list adapter to display to list info with
         ArrayAdapter<String> adapter =
                 new ArrayAdapter<String>(this,
                         R.layout.item_catagory,
                         R.id.text_catagory,
                         mCatagoryList);
 
+        // get a reference to the listview
         ListView listView = (ListView) findViewById(R.id.list_catagories);
 
+        // set the adapter on the listview
         listView.setAdapter(adapter);
 
+        // handle all clicks on the list here
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
@@ -65,7 +73,9 @@ public class BountyHuntActivity extends AppCompatActivity {
 
                 Intent intent = new Intent(BountyHuntActivity.this, BountyHuntCatagoryActivity.class);
 
+                // whatever category is selected from the list, send that to the next activity
                 String catagory = (String) mCatagoryList.get(position);
+
                 intent.putExtra(EXTRA_CATEGORY, catagory);
                 startActivity(intent);
             }
@@ -90,6 +100,7 @@ public class BountyHuntActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+        // the following intents serve to start different activities as buttons are pressed
         switch(id) {
             case R.id.action_place:
                 Intent placeIntent = new Intent(this, PlaceBounty.class);
@@ -114,7 +125,5 @@ public class BountyHuntActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
-
 
 }

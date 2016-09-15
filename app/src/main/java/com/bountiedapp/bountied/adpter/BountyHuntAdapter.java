@@ -13,24 +13,35 @@ import android.widget.TextView;
 
 import com.bountiedapp.bountied.R;
 import com.bountiedapp.bountied.model.BountyHuntListItem;
-import com.bountiedapp.bountied.ui.HomeActivity;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by mprovost on 6/15/2016.
- */
+/*****************************************************************************
+ * The adapter classes are built to set all the data that is passed in
+ * properly into views(xml layout) that we also pass this class.
+ * It then works with a recycler view to create many instances of the views,
+ * while keeping track of which data is where in the list.
+ * These adapters/recycler views are much quick than the older list views.
+ * They are also much more efficient as the recycler views simply "recycle"
+ * the old objects instead of create a large supply of them.
+ *
+ * Different adapters correspond with different types of data and views
+ *****************************************************************************/
+
+
 public class BountyHuntAdapter extends RecyclerView.Adapter<BountyHuntAdapter.BountyHuntHolder>{
 
+    // endpoint on our server for bounty images
     private static final String BOUNTY_IMAGES_BASE_URL = "http://192.168.1.8:3000/images/";
 
-    private List<BountyHuntListItem> bountyHuntListData;
-    private LayoutInflater layoutInflater;
+    // this is the list data passed in through "recyclerview.setAdapter(adapter)" in the activity
+    private List<BountyHuntListItem> mBountyHuntListData;
+    private LayoutInflater mLayoutInflater;
     private Context mContext;
 
-    private ItemClickCallback itemClickCallback;
+    private ItemClickCallback mItemClickCallback;
 
     private LruCache<Integer, Bitmap> imageCache;
 
@@ -38,21 +49,22 @@ public class BountyHuntAdapter extends RecyclerView.Adapter<BountyHuntAdapter.Bo
     // the BountyHuntAdapter class having to hold the Activity in memory
     // ** this is basically a communication channel
     public interface ItemClickCallback {
-        // this gets called whenever user clicks anything other than the secondary icon
+        // these get call when user clicks in the card
         void onItemClick(int position);
         void onHuntClick(int position);
         void onSaveClick(int position);
     }
 
     public void setItemClickCallback(final ItemClickCallback itemClickCallback) {
-        this.itemClickCallback = itemClickCallback;
+        this.mItemClickCallback = itemClickCallback;
     }
 
+    // constructor for class, takes list data and context of activity
     public BountyHuntAdapter(List<BountyHuntListItem> bountyHuntListData, Context context) {
 
         mContext = context;
-        this.layoutInflater = LayoutInflater.from(context);
-        this.bountyHuntListData = bountyHuntListData;
+        this.mLayoutInflater = LayoutInflater.from(context);
+        this.mBountyHuntListData = bountyHuntListData;
 
         // setup the chache for bitmaps
         // equation comes from android docs
@@ -61,41 +73,42 @@ public class BountyHuntAdapter extends RecyclerView.Adapter<BountyHuntAdapter.Bo
         imageCache = new LruCache<>(chacheSize);
     }
 
-//    public void setBountyHuntListData(ArrayList<Bounty> listBounties ) {
-//        this.bountyHuntListData
-//    }
-
 
     public void setListData(ArrayList<BountyHuntListItem> updatedList) {
-        this.bountyHuntListData.clear();
-        this.bountyHuntListData.addAll(updatedList);
+        this.mBountyHuntListData.clear();
+        this.mBountyHuntListData.addAll(updatedList);
     }
 
+    // create a new viewholder object, by using an inflater created in ctor
     @Override
     public BountyHuntHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = layoutInflater.inflate(R.layout.card_item, parent, false);
+
+        // inflate the xml layout here
+        View view = mLayoutInflater.inflate(R.layout.card_item, parent, false);
         return new BountyHuntHolder(view);
     }
 
     // holder is declared final so we can use it within the network call
+    // position is used to grab appropriate data in our list
     @Override
     public void onBindViewHolder(final BountyHuntHolder holder, int position) {
 
-        BountyHuntListItem bountyHuntListItem = bountyHuntListData.get(position);
+        // gets the appropriate data based on the position in list
+        BountyHuntListItem bountyHuntListItem = mBountyHuntListData.get(position);
 
-        // this is where i think i can request and set the image....
-        holder.title.setText(bountyHuntListItem.getmTitle());
-        holder.description.setText(bountyHuntListItem.getmDescription());
-        holder.bounty.setText("$" + bountyHuntListItem.getmBounty());
+        // this is where i can request and set the image....
+        // the following variables correspond with the holder class below
+        holder.title.setText(bountyHuntListItem.getTitle());
+        holder.description.setText(bountyHuntListItem.getDescription());
+        holder.bounty.setText("$" + bountyHuntListItem.getBounty());
 
         // Display image in ImageView widget
-        // NEED TO DEFINE .getID & ID etc..... ALSO NEED TO SETUP getBitmap
         Bitmap bitmap = null; //imageCache.get(bountyHuntListItem.getId());
 //        if (bitmap != null) {
 //            holder.thumbnail.setImageBitmap(bitmap);
 //        }
 //        else {
-        String imageUrl = BOUNTY_IMAGES_BASE_URL + bountyHuntListItem.getmImageUrl() + ".jpg";
+        String imageUrl = BOUNTY_IMAGES_BASE_URL + bountyHuntListItem.getImageUrl() + ".jpg";
 
         Uri uri = Uri.parse(imageUrl);
 
@@ -103,9 +116,10 @@ public class BountyHuntAdapter extends RecyclerView.Adapter<BountyHuntAdapter.Bo
 
     }
 
+    // tells adapter how many view holder objects it needs to create
     @Override
     public int getItemCount() {
-        return bountyHuntListData.size();
+        return mBountyHuntListData.size();
     }
 
     // a RecyclerView's adapter needs a view holder class
@@ -115,10 +129,13 @@ public class BountyHuntAdapter extends RecyclerView.Adapter<BountyHuntAdapter.Bo
     // places and represent a single view item of the recycler view
     class BountyHuntHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
+        // ui elements
         private TextView title;
         private TextView description;
         private ImageView bountyImage;
         private TextView bounty;
+
+        // these are used for the onclicklisteners
         private View container;
         private View hunt;
         private View save;
@@ -126,6 +143,7 @@ public class BountyHuntAdapter extends RecyclerView.Adapter<BountyHuntAdapter.Bo
         public BountyHuntHolder(View itemView) {
             super(itemView);
 
+            // references to elements in xml
             title = (TextView)itemView.findViewById(R.id.card_title);
             description = (TextView)itemView.findViewById(R.id.card_description);
             bountyImage = (ImageView)itemView.findViewById(R.id.card_image);
@@ -144,13 +162,13 @@ public class BountyHuntAdapter extends RecyclerView.Adapter<BountyHuntAdapter.Bo
         public void onClick(View view) {
             // if the view that is clicked is the container
             if (view.getId() == R.id.card_item) {
-                itemClickCallback.onItemClick(getAdapterPosition());
+                mItemClickCallback.onItemClick(getAdapterPosition());
             }
             if (view.getId() == R.id.card_capture) {
-                itemClickCallback.onHuntClick(getAdapterPosition());
+                mItemClickCallback.onHuntClick(getAdapterPosition());
             }
             if (view.getId() == R.id.card_save) {
-                itemClickCallback.onSaveClick(getAdapterPosition());
+                mItemClickCallback.onSaveClick(getAdapterPosition());
             }
         }
     }

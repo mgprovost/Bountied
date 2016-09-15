@@ -21,14 +21,15 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by mprovost on 7/25/2016.
- */
+/*****************************************************************
+ * Necessary Firebase Class that must be in place in order to
+ * use firebase.  Allows a token to be refreshed automatically.
+ *****************************************************************/
 public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
 
     private static final String TAG = "MyFirebaseIIDService";
     private final String URL = "http://192.168.1.6:3000/updatetoken/";
-    private final String idFileName = "ID";
+    private final String mIdFileName = "ID";
 
 
     // this is only call called if the token needs updating
@@ -46,7 +47,7 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
         internalWriter.writeToMemory("token", token);
 
         // read the id that has been saved in internal memory and save it in variable
-        String id = internalReader.readFromFile(idFileName);
+        String id = internalReader.readFromFile(mIdFileName);
 
         // if the id returned from the file isn't blank
         // which can happen if the user hasn't registered yet
@@ -60,26 +61,9 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
         Log.d(TAG, "Refreshed token: " + token);
     }
 
-    private void writeTokenToInternalMemory(String token) {
-        writeToFile("token.txt", token);
-    }
 
-    private void writeToFile(String filename, String message) {
-        FileOutputStream fileOutputStream;
-
-        try {
-            fileOutputStream = openFileOutput(filename, Context.MODE_PRIVATE);
-            fileOutputStream.write(message.getBytes());
-            fileOutputStream.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    // probably need a function to say ok... if the token has been refreshed
-    // ... simply update the token associated with with this user
-    // then place it in onTokenRefresh
-
+    // update the token on the database for this user
+    // this is called automatically in above method
     private static void updateToken(Context context, final String URL, final String TOKEN, final String ID){
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, URL, new Response.Listener<String>() {
@@ -103,39 +87,6 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
             }
         };
         NetworkSingleton.getInstance(context).addToRequestQueue(stringRequest, TAG);
-    }
-
-
-    // get the id of this user
-    // read a string of data from a file saved in internal memory
-    private String readFromFile(String filename) {
-
-        String ret = "";
-
-        try {
-            InputStream inputStream = openFileInput(filename + ".txt");
-
-            if ( inputStream != null ) {
-                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-                String receiveString = "";
-                StringBuilder stringBuilder = new StringBuilder();
-
-                while ( (receiveString = bufferedReader.readLine()) != null ) {
-                    stringBuilder.append(receiveString);
-                }
-
-                inputStream.close();
-                ret = stringBuilder.toString();
-            }
-        }
-        catch (FileNotFoundException e) {
-            Log.e("login activity", "File not found: " + e.toString());
-        } catch (IOException e) {
-            Log.e("login activity", "Can not read file: " + e.toString());
-        }
-
-        return ret;
     }
 
 }

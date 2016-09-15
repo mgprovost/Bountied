@@ -1,83 +1,53 @@
 package com.bountiedapp.bountied.ui;
 
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Environment;
-import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.*;
 
-import com.bountiedapp.bountied.ImageConverter;
-import com.bountiedapp.bountied.InternalReader;
-import com.bountiedapp.bountied.InternalWriter;
-import com.bountiedapp.bountied.R;
-import com.bountiedapp.bountied.Upload;
-import com.bountiedapp.bountied.model.FoundBounty;
-import com.bountiedapp.bountied.model.Gps;
-import com.squareup.picasso.Callback;
+import com.bountiedapp.bountied.*;
 import com.squareup.picasso.Picasso;
-
-import org.json.JSONException;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
 
 public class HuntsInProgressDetail extends AppCompatActivity implements View.OnClickListener {
 
-    // these are just static strings used for the intents
+    // endpoint to get image data from the server
+    private static final String BOUNTY_IMAGES_BASE_URL = "http://192.168.1.8:3000/images/";
+
+    // constant used when returning to the activity from the camera intent
+    private int REQUEST_IMAGE_CAPTURE = 1;
+
+    // these are just static strings used for the receiving of
+    // data from the hunts in progress activity to this detail activity
     private static final String BUNDLE_EXTRAS = "BUNDLE_EXTRAS";
     private static final String EXTRA_TITLE = "EXTRA_TITLE";
     private static final String EXTRA_DESCRIPTION = "EXTRA_DESCRIPTION";
     private static final String EXTRA_BOUNTY = "EXTRA_BOUNTY";
     private static final String EXTRA_IMAGEURL = "EXTRA_IMAGEURL";
     private static final String EXTRA_PLACERID = "EXTRA_PLACERID";
-    private static final String EXTRA_LAT = "EXTRA_LAT";
-    private static final String EXTRA_LNG = "EXTRA_LNG";
 
-    private Button mHuntButton;
+    // functionality associated with the camera/hunt button
+    private com.bountiedapp.bountied.Button mHuntButton;
 
-    private int REQUEST_IMAGE_CAPTURE = 1;
-
-    private String mImageLocation;
-
-    private static final String BOUNTY_IMAGES_BASE_URL = "http://192.168.1.8:3000/images/";
-
+    // UI element camera floating action button
     private FloatingActionButton mCameraFab;
 
-
     private String mBountyId;
-    // need to get the following
     private String mPlacerId;
-    private String mLat;
-    private String mLng;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        // set the view from xml file
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hunts_in_progress_detail);
 
+        // set the toolbar from xml file
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -85,46 +55,30 @@ public class HuntsInProgressDetail extends AppCompatActivity implements View.OnC
         // android to display a return arrow to appear
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        // get reference to camera fab, then set the
+        // click listener to be handled by this activity
         mCameraFab = (FloatingActionButton)findViewById(R.id.fab_hunt);
         mCameraFab.setOnClickListener(this);
 
+        // get the bundled extras from previous activity
         Bundle extras = getIntent().getBundleExtra(BUNDLE_EXTRAS);
-
         String imageUrl = extras.getString(EXTRA_IMAGEURL) + ".jpg";
         mBountyId = extras.getString(EXTRA_IMAGEURL);
         mPlacerId = extras.getString(EXTRA_PLACERID);
 
-//        mLat = extras.getString(EXTRA_LAT);
-//        mLng = extras.getString(EXTRA_LNG);
-
-        System.out.println("BOUNTY ID:    "  + mBountyId);
-        System.out.println("Home Detail extras:  " + extras.toString());
-
-
-        System.out.println("Image URL:  " + imageUrl);
-
-
-
+        // create url of where the image is currently available
         Uri uri = Uri.parse(BOUNTY_IMAGES_BASE_URL + imageUrl);
 
-        final ImageView imageView = (ImageView)findViewById(R.id.detail_image);
+        // get a reference to the imageview, needs to final
+        ImageView imageView = (ImageView)findViewById(R.id.hunts_in_progress_detail_image);
 
-        Picasso.with(this).load(uri).fit().centerCrop().into(imageView, new Callback() {
-            @Override
-            public void onSuccess() {
-                System.out.println("HEIGHT: " + imageView.getDrawable().getIntrinsicHeight());
-                System.out.println("WIDTH: " + imageView.getDrawable().getIntrinsicWidth());
-            }
+        // load image from server into imageview, crop it, and make it fit
+        Picasso.with(this).load(uri).fit().centerCrop().into(imageView);
 
-            @Override
-            public void onError() {
-
-            }
-        });
-
-
-        ((TextView)findViewById(R.id.detail_title)).setText(extras.getString(EXTRA_TITLE));
-        ((TextView)findViewById(R.id.detail_description)).setText(extras.getString(EXTRA_DESCRIPTION));
+        // set title, description, and bounty views from the bundled extras
+        ((TextView)findViewById(R.id.hunts_in_progress_detail_title)).setText(extras.getString(EXTRA_TITLE));
+        ((TextView)findViewById(R.id.hunts_in_progress_detail_description)).setText(extras.getString(EXTRA_DESCRIPTION));
+        ((TextView)findViewById(R.id.hunts_in_progress_detail_bounty)).setText("$" + extras.getString(EXTRA_BOUNTY));
 
     }
 
@@ -144,6 +98,7 @@ public class HuntsInProgressDetail extends AppCompatActivity implements View.OnC
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+        // the following intents serve to start different activities as buttons are pressed
         switch(id) {
             case android.R.id.home:
                 finish();
@@ -173,22 +128,23 @@ public class HuntsInProgressDetail extends AppCompatActivity implements View.OnC
         return super.onOptionsItemSelected(item);
     }
 
-
-
+    // handle the clicking of the camera/hunt fab button here
     @Override
     public void onClick(View v) {
 
         int id = v.getId();
+
         switch (id){
             case R.id.fab_hunt:
 
-                mHuntButton = new Button();
+                mHuntButton = new com.bountiedapp.bountied.Button();
                 mHuntButton.startCameraIntent(this);
                 break;
         }
     }
 
 
+    // handle the returning from the camera activity here
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -205,9 +161,7 @@ public class HuntsInProgressDetail extends AppCompatActivity implements View.OnC
             // restart the activity to see updated list
             Intent huntsIntent = new Intent(this, HuntsInProgress.class);
             startActivity(huntsIntent);
-
         }
-
     }
 
 }

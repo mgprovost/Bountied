@@ -3,92 +3,117 @@ package com.bountiedapp.bountied.model;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-/**
- * Created by mprovost on 6/15/2016.
- *
- * Java respresentation of our data to be displayed in RecyclerView
- */
+// Simple class to pass data back and for to the network class and adapters
+// holds information having to do with a - bounty hunt -
+
 public class BountyHuntListItem {
 
-    private String mTitle;
-    private String mDescription;
-    private String mBounty;
-    private String mImageUrl;
-    private String mPlacerID;
-    private String mLat;
-    private String mLng;
+    private String title;
+    private String description;
+    private String bounty;
+    private String imageUrl;
+    private String placerID;
+    private String lat;
+    private String lng;
     private String foundLat;
     private String foundLng;
+    private ArrayList foundIDS;
 
     public BountyHuntListItem() {
-        mTitle = null;
-        mDescription = null;
-        mBounty = null;
-        mImageUrl = null;
-        mPlacerID = null;
-        mLat = null;
-        mLng = null;
+        title = null;
+        description = null;
+        bounty = null;
+        imageUrl = null;
+        placerID = null;
+        lat = null;
+        lng = null;
         foundLat = null;
         foundLng = null;
     }
 
 
-    private ArrayList foundIDS;
-
-    public String getmTitle() {
-        return mTitle;
+    public String getTitle() {
+        return title;
     }
 
-    public void setmTitle(String mTitle) {
-        this.mTitle = mTitle;
+    public void setTitle(String title) {
+
+        this.title = title;
     }
 
-    public String getmDescription() {
-        return mDescription;
+    public String getDescription() {
+
+        return description;
     }
 
-    public void setmDescription(String mDescription) {
-        this.mDescription = mDescription;
+    public void setDescription(String description) {
+
+        this.description = description;
     }
 
-    public String getmBounty() {
-        return mBounty;
+    public String getBounty() {
+
+        return bounty;
     }
 
-    public void setmBounty(String mBounty) {
-        this.mBounty = mBounty;
+    public void setBounty(String bounty) {
+
+        this.bounty = bounty;
     }
 
-    public String getmImageUrl() {
-        return mImageUrl;
+    public String getImageUrl() {
+
+        return imageUrl;
     }
 
-    public void setmImageUrl(String mImageUrl) {
-        this.mImageUrl = mImageUrl;
+    public void setImageUrl(String imageUrl) {
+
+        this.imageUrl = imageUrl;
     }
 
-    public String getmPlacerID() { return mPlacerID; }
+    public String getPlacerID() {
+        return placerID;
+    }
 
-    public void setmPlacerID(String mPlacerID) { this.mPlacerID = mPlacerID; }
+    public void setPlacerID(String placerID) {
+        this.placerID = placerID;
+    }
 
-    public String getmLat() { return mLat; }
+    public String getLat() {
+        return lat;
+    }
 
-    public void setmLat(String mLat) { this.mLat = mLat; }
+    public void setLat(String mLat) {
+        this.lat = mLat;
+    }
 
-    public String getmLng() { return mLng; }
+    public String getLng() {
+        return lng;
+    }
 
-    public void setmLng(String mLng) { this.mLng = mLng; }
+    public void setLng(String lng) {
+        this.lng = lng;
+    }
 
-    public String getFoundLat() { return foundLat; }
+    public String getFoundLat() {
+        return foundLat;
+    }
 
-    public void setFoundLat(String foundLat) { this.foundLat = foundLat; }
+    public void setFoundLat(String foundLat) {
+        this.foundLat = foundLat;
+    }
 
-    public String getFoundLng() { return foundLng; }
+    public String getFoundLng() {
+        return foundLng;
+    }
 
-    public void setFoundLng(String foundLng) { this.foundLng = foundLng; }
+    public void setFoundLng(String foundLng) {
+        this.foundLng = foundLng;
+    }
 
-
-    public ArrayList getFoundIDS() { return foundIDS; }
+    public ArrayList getFoundIDS() {
+        return foundIDS;
+    }
 
     public void setFoundIDS(String foundIDS) {
         if (foundIDS.equals("")) {
@@ -101,13 +126,13 @@ public class BountyHuntListItem {
 
     @Override
     public String toString() {
-        return  "Title: " + mTitle +
-                " Description: " + mDescription +
-                " Bounty: " + mBounty +
-                " Lat: " + mLat +
-                " Lng: " + mLng +
-                " BountyID: " + mImageUrl +
-                " PlacerID: " + mPlacerID;
+        return  "Title: " + title +
+                " Description: " + description +
+                " Bounty: " + bounty +
+                " Lat: " + lat +
+                " Lng: " + lng +
+                " BountyID: " + imageUrl +
+                " PlacerID: " + placerID;
     }
 
     // get an array list from a string

@@ -9,23 +9,27 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 
-/**
- * Created by mprovost on 7/1/2016.
- */
+/*************************************************
+* GPS class to create a GPS listener to
+* start listening for updates on users location
+* report the users location
+* stop listening for updates
+**************************************************/
+
 public class Gps {
 
-    private double mLat;
-    private double mLng;
     private LocationManager locationManager;
     private LocationListener locationListener;
     private String locationProvider;
+    private double lat;
+    private double lng;
 
     // starts the Gps to receive updates on location
     public Gps(Context context) {
 
-        // initialize mLat and mLng to 0
-        mLat = 0;
-        mLng = 0;
+        // initialize lat and lng to 0
+        lat = 0;
+        lng = 0;
 
         // Aquire a reference to the system location manager
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
@@ -53,7 +57,10 @@ public class Gps {
             }
         };
 
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(context,
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(context,
+                        Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
             // here to request the missing permissions, and then overriding
@@ -66,23 +73,6 @@ public class Gps {
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
 
         locationProvider = LocationManager.GPS_PROVIDER;
-    }
-
-    // getters and setters for mLat and mLng
-    public double getmLat() {
-        return mLat;
-    }
-
-    public void setmLat(double mLat) {
-        this.mLat = mLat;
-    }
-
-    public double getmLng() {
-        return mLng;
-    }
-
-    public void setmLng(double mLng) {
-        this.mLng = mLng;
     }
 
     // stops the Gps from receiving updates on the current location
@@ -100,6 +90,8 @@ public class Gps {
         locationManager.removeUpdates(locationListener);
     }
 
+
+    // set the last lat and lng where the user was recorded
     public void setLastKnownLatLng(Context context) {
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
@@ -113,8 +105,25 @@ public class Gps {
         }
         Location lastKnownLocation = locationManager.getLastKnownLocation(locationProvider);
 
-        mLat = lastKnownLocation.getLatitude();
-        mLng = lastKnownLocation.getLongitude();
+        lat = lastKnownLocation.getLatitude();
+        lng = lastKnownLocation.getLongitude();
+    }
+
+    // getters and setters for lat and lng
+    public double getLat() {
+        return lat;
+    }
+
+    public void setLat(double lat) {
+        this.lat = lat;
+    }
+
+    public double getLng() {
+        return lng;
+    }
+
+    public void setLng(double lng) {
+        this.lng = lng;
     }
 
 }

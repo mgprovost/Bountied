@@ -1,8 +1,13 @@
 package com.bountiedapp.bountied.model;
 
-/**
- * Created by mprovost on 6/28/2016.
- */
+/****************************************************
+ *    The Bounty class is used to efficiently keep
+ *    track of a bounty and all it's relevant data.
+ *    It's also, much easier to pass an object of
+ *    this class than to seperately pass all the
+ *    associated data.
+ ****************************************************/
+
 public class Bounty {
 
     private String title;
@@ -63,9 +68,13 @@ public class Bounty {
         this.radius = radius;
     }
 
-    public String getCatagory() { return category; }
+    public String getCatagory() {
+        return category;
+    }
 
-    public void setCatagory(String catagory) { this.category = catagory; }
+    public void setCatagory(String catagory) {
+        this.category = catagory;
+    }
 
     public String getLat() {
         return lat;
@@ -91,12 +100,20 @@ public class Bounty {
         this.imageAsString = imageAsString;
     }
 
-    public String getUsername() { return username; }
+    public String getUsername() {
+        return username;
+    }
 
-    public void setUsername(String username) { this.username = username; }
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
-    public String getPlacerID() { return placerID; }
+    public String getPlacerID() {
+        return placerID;
+    }
 
-    public void setPlacerID(String placerID) { this.placerID = placerID; }
+    public void setPlacerID(String placerID) {
+        this.placerID = placerID;
+    }
 
 }

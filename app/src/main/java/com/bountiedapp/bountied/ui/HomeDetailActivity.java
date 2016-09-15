@@ -13,13 +13,13 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.*;
 
-import com.bountiedapp.bountied.R;
+import com.bountiedapp.bountied.*;
 import com.squareup.picasso.Picasso;
 
 
 public class HomeDetailActivity extends AppCompatActivity implements View.OnClickListener {
 
-    // endpoint to send information to the server
+    // endpoint to get information from the server
     private static final String BOUNTY_IMAGES_BASE_URL = "http://192.168.1.8:3000/images/";
 
     // constant used when returning to the activity from the camera intent
@@ -53,7 +53,7 @@ public class HomeDetailActivity extends AppCompatActivity implements View.OnClic
     private String mLng;
 
     // used with the fab, with the camera, and on return from the camera
-    private Button huntButton;
+    private com.bountiedapp.bountied.Button huntButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -178,7 +178,7 @@ public class HomeDetailActivity extends AppCompatActivity implements View.OnClic
             // handles the saving of a bounty to a saved bounty file in internal memory
             case R.id.fab_save:
 
-                Button saveButton = new Button();
+                com.bountiedapp.bountied.Button saveButton = new com.bountiedapp.bountied.Button();
                 saveButton.saveBounty(this, mBountyId);
                 break;
 
@@ -186,7 +186,7 @@ public class HomeDetailActivity extends AppCompatActivity implements View.OnClic
             case R.id.fab_hunt:
 
                 // create a new camera instance and start the camera
-                huntButton = new Button();
+                huntButton = new com.bountiedapp.bountied.Button();
                 huntButton.startCameraIntent(this);
                 break;
         }

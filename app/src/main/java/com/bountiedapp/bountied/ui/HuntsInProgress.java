@@ -2,69 +2,72 @@ package com.bountiedapp.bountied.ui;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
-import com.bountiedapp.bountied.DividerItemDecoration;
+import com.bountiedapp.bountied.Button;
 import com.bountiedapp.bountied.DownloadBountyList;
 import com.bountiedapp.bountied.InternalReader;
-import com.bountiedapp.bountied.InternalWriter;
 import com.bountiedapp.bountied.R;
-import com.bountiedapp.bountied.adpter.BountyHuntAdapter;
 import com.bountiedapp.bountied.adpter.BountyHuntsInProgressAdapter;
 import com.bountiedapp.bountied.model.BountyHuntListItem;
 import com.bountiedapp.bountied.model.Gps;
 
 import org.json.JSONException;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class HuntsInProgress extends AppCompatActivity implements BountyHuntsInProgressAdapter.ItemClickCallback {
 
-    private static BountyHuntsInProgressAdapter mBountyHuntsInProgressAdapter;
-    private static RecyclerView recyclerView;
-    private ArrayList mBountyHuntListData;
-    private Gps gps;
+    // endpoint to send information to the server
+    private final String M_URL = "http://192.168.1.8:3000/bountiesinprogress";
 
-    private String bountyID;
-    private String placerID;
-
-    private Button huntButton;
-    private Button deleteButton;
-
+    // constant used when returning to the activity from the camera intent
     private int REQUEST_IMAGE_CAPTURE = 1;
 
-    // these are just static strings used for the intents
+    // these are just static strings to be used for our intent
+    // specifically to send the strings to the following detail activity
     private static final String BUNDLE_EXTRAS = "BUNDLE_EXTRAS";
     private static final String EXTRA_TITLE = "EXTRA_TITLE";
     private static final String EXTRA_DESCRIPTION = "EXTRA_DESCRIPTION";
-    private static final String EXTRA_ACTIVITY = "EXTRA_ACTIVITY";
+    private static final String EXTRA_BOUNTY = "EXTRA_BOUNTY";
     private static final String EXTRA_IMAGEURL = "EXTRA_IMAGEURL";
     private static final String EXTRA_PLACERID = "EXTRA_PLACERID";
 
-    private static final String HUNTS_IN_PROGRESS = "HUNTS_IN_PROGRESS";
+    // bounty hunts in progress adapter is to be used by the recycler view
+    // to set the view based on the information it's given
+    private static BountyHuntsInProgressAdapter mBountyHuntsInProgressAdapter;
 
-    private final String M_URL = "http://192.168.1.8:3000/bountiesinprogress";
+    // recycler view is used to display all the "cards" produced by the data
+    private static RecyclerView mRecyclerView;
+
+    // will hold the returned data from the server when it responds
+    private ArrayList mBountyHuntListData;
+
+    private Gps mGPS;
+    private String mBountyID;
+    private String mPlacerID;
+
+    // will be responsible for the action that occurs
+    // when the hunt/delete buttons are pressed
+    private Button mHuntButton;
+    private Button mDeleteButton;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        // set the view from xml file
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hunts_in_progress);
 
+        // set the toolbar from xml file
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -72,10 +75,13 @@ public class HuntsInProgress extends AppCompatActivity implements BountyHuntsInP
         // android to display a return arrow to appear
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        // May need to load this in the launch screen initially
-        gps = new Gps(this);
+        // instantiate a new GPS object to use before going out to server
+        mGPS = new Gps(this);
 
-        recyclerView = (RecyclerView) findViewById(R.id.recycler_list_hunts_in_progress);
+        // get a reference to the recycler view
+        mRecyclerView = (RecyclerView) findViewById(R.id.recycler_list_hunts_in_progress);
+
+        // go get the data from the server
         getListData(this);
 
     }
@@ -97,6 +103,7 @@ public class HuntsInProgress extends AppCompatActivity implements BountyHuntsInP
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+        // the following intents serve to start different activities as buttons are pressed
         switch(id) {
             case R.id.action_place:
                 Intent placeIntent = new Intent(this, PlaceBounty.class);
@@ -122,42 +129,48 @@ public class HuntsInProgress extends AppCompatActivity implements BountyHuntsInP
         return super.onOptionsItemSelected(item);
     }
 
-
+    // grabs the list of data from the network
     public void getListData(final Context context) {
 
         // sets the last know user coords for gps
-        gps.setLastKnownLatLng(this);
+        mGPS.setLastKnownLatLng(this);
 
         // pull the users lat and lng coordinates to use them in the downloading of the relevant list
-        String mLat = Double.toString(gps.getmLat());
-        String mLng = Double.toString(gps.getmLng());
-
-        System.out.println("Latitude is:  " + mLat);
-        System.out.println("Longitude is:  " + mLng);
+        String mLat = Double.toString(mGPS.getLat());
+        String mLng = Double.toString(mGPS.getLng());
 
         // stops the gps from listening for new coords which is costly for battery life
-        gps.stopGps(this);
+        mGPS.stopGps(this);
 
+        // read all the bounties that a user is hunting in progress in internal memory
+        // the internal reader returns a string, so convert it to a list of ids
         InternalReader internalReader = new InternalReader(this);
         String ids = internalReader.readFromFile("bounties_to_hunt");
         ArrayList arrayOfIds = getArrayFromString(ids);
 
+        // asynchronously download the data associated with the bounty ids we read above
+        // it will use the location of the user and parse out bounties the user
+        // should not see because of the radius that the bounty placer specified
         try {
             DownloadBountyList downloadBountyList = new DownloadBountyList();
             downloadBountyList.downloadInProgress(this, M_URL, arrayOfIds, mLat, mLng, new DownloadBountyList.VolleyCallback() {
                 @Override
                 public void onSuccess(ArrayList<BountyHuntListItem> result) {
 
+                    // this is the returned data from the server
                     mBountyHuntListData = result;
 
-                    recyclerView.setLayoutManager(new LinearLayoutManager(context));
+                    // layout manager takes care of the look of the layout
+                    mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
 
+                    // pass the returned data from the server to our adapter
                     mBountyHuntsInProgressAdapter = new BountyHuntsInProgressAdapter(result, context);
 
-                    recyclerView.setAdapter(mBountyHuntsInProgressAdapter);
+                    // pass our custom adapter, after it has been loaded with data, to the view
+                    mRecyclerView.setAdapter(mBountyHuntsInProgressAdapter);
 
                     // this basically says to Adapter when itemClickCallBack is called
-                    // ill (this Activity) will handle it
+                    // I (this Activity) will handle it
                     mBountyHuntsInProgressAdapter.setItemClickCallback(HuntsInProgress.this);
 
                 }
@@ -168,75 +181,86 @@ public class HuntsInProgress extends AppCompatActivity implements BountyHuntsInP
         }
     }
 
+    // used for coming back from external activity like camera activity that user launched
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        // if the user came back from the camera activity without a problem
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
 
             // upload the picture just taken from the camera to the server
-            huntButton.uploadCameraPicture(this, placerID, bountyID);
+            mHuntButton.uploadCameraPicture(this, mPlacerID, mBountyID);
 
             // since this bountyID is saved in internal memory as a hunt in progress
-            // need to go into internal memory and erase it
-            huntButton.deleteBounty(this, bountyID);
+            // need to go into internal memory and erase it, because user just hunted it
+            mHuntButton.deleteBounty(this, mBountyID);
 
             // go to the HuntsInProgress activity to see updated list
             Intent huntsIntent = new Intent(this, HuntsInProgress.class);
             startActivity(huntsIntent);
         }
-
     }
 
+    // if any of the cards, any part of the card except the button gets clicked, do the following
     @Override
     public void onItemClick(int position) {
+
+        // from the returned server data, get a single bounty hunt item / info associated with that item
         BountyHuntListItem bountyHuntListItem = (BountyHuntListItem) mBountyHuntListData.get(position);
 
+        // intent will be used to open the detail activity if card is clicked
         Intent intent = new Intent(this, HuntsInProgressDetail.class);
 
+        // put all the following info in a bundle to send it to detail activity
         Bundle extras = new Bundle();
-        extras.putString(EXTRA_TITLE, bountyHuntListItem.getmTitle());
-//        extras.putString(EXTRA_DESCRIPTION, bountyHuntListItem.getmDescription());
-//        extras.putString(EXTRA_BOUNTY, bountyHuntListItem.getmBounty());
-        extras.putString(EXTRA_IMAGEURL, bountyHuntListItem.getmImageUrl());
-        extras.putString(EXTRA_PLACERID, bountyHuntListItem.getmPlacerID());
-
-        System.out.println(extras.toString());
+        extras.putString(EXTRA_TITLE, bountyHuntListItem.getTitle());
+        extras.putString(EXTRA_DESCRIPTION, bountyHuntListItem.getDescription());
+        extras.putString(EXTRA_BOUNTY, bountyHuntListItem.getBounty());
+        extras.putString(EXTRA_IMAGEURL, bountyHuntListItem.getImageUrl());
+        extras.putString(EXTRA_PLACERID, bountyHuntListItem.getPlacerID());
 
         intent.putExtra(BUNDLE_EXTRAS, extras);
         startActivity(intent);
     }
 
+    // called when user clicks "hunt" on the bounty card
     @Override
     public void onHuntClick(int position) {
+
         // this will have all the info to the most recently clicked "bounty card"
         BountyHuntListItem bountyHuntListItem = (BountyHuntListItem) mBountyHuntListData.get(position);
 
         // imageUrl is same as bountyID, also get the placerID
-        bountyID = bountyHuntListItem.getmImageUrl();
-        placerID = bountyHuntListItem.getmPlacerID();
+        mBountyID = bountyHuntListItem.getImageUrl();
+        mPlacerID = bountyHuntListItem.getPlacerID();
 
         // create a new camera instance and start the camera
-        huntButton = new Button();
-        huntButton.startCameraIntent(this);
+        mHuntButton = new Button();
+        mHuntButton.startCameraIntent(this);
     }
 
     @Override
     public void onDeleteClick(int position) {
+
         // this will have all the info to the most recently clicked "bounty card"
         BountyHuntListItem bountyHuntListItem = (BountyHuntListItem) mBountyHuntListData.get(position);
 
-        bountyID = bountyHuntListItem.getmImageUrl();
+        // imageUrl is same as bountyID, also get the placerID
+        mBountyID = bountyHuntListItem.getImageUrl();
 
-        deleteButton = new Button();
-        deleteButton.deleteBounty(this, bountyID);
+        // delete the bounty from the users internally
+        // stored saved bounties that user is hunting for
+        mDeleteButton = new Button();
+        mDeleteButton.deleteBounty(this, mBountyID);
 
+        // refresh this page/activity
         finish();
         startActivity(getIntent());
     }
 
     // get an array list from a string
-    // this return an arraylist from the downloaded "found" string format
+    // this returns an arraylist from the downloaded "found" string format
     private ArrayList getArrayFromString(String someString) {
 
         // remove the left bracket, then right bracket, then all spaces from the string

@@ -3,18 +3,13 @@ package com.bountiedapp.bountied.ui;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.bountiedapp.bountied.R;
-import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 /**
@@ -22,19 +17,24 @@ import com.squareup.picasso.Picasso;
  */
 public class FullImageActivity extends AppCompatActivity {
 
-    // these are just static strings used for the intents
+    // endpoint on our server where the possible found images are stored
+    private static final String M_BOUNTY_IMAGES_BASE_URL = "http://192.168.1.8:3000/foundimages/";
+
+    // these are just static strings used to get imageurl data from intent
     private static final String BUNDLE_EXTRAS = "BUNDLE_EXTRAS";
     private static final String EXTRA_IMAGEURL = "EXTRA_IMAGEURL";
 
-    private ImageView imageView;
-
-    private static final String BOUNTY_IMAGES_BASE_URL = "http://192.168.1.8:3000/foundimages/";
+    // UI element
+    private ImageView mImageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        // set the view from xml file
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_full_image);
 
+        // set the toolbar from the xml
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -42,17 +42,18 @@ public class FullImageActivity extends AppCompatActivity {
         // android to display a return arrow to appear
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        imageView = (ImageView)findViewById(R.id.full_image);
+        // get reference to the imageview
+        mImageView = (ImageView)findViewById(R.id.full_image);
 
+        // get the image URL and add .jpg to it
         Bundle extras = getIntent().getBundleExtra(BUNDLE_EXTRAS);
-
         String imageUrl = extras.getString(EXTRA_IMAGEURL) + ".jpg";
-        System.out.println("IMAGE URL: " + imageUrl.toString());
 
-        Uri uri = Uri.parse(BOUNTY_IMAGES_BASE_URL + imageUrl);
+        // create a URI with which to go get the image from our database
+        Uri uri = Uri.parse(M_BOUNTY_IMAGES_BASE_URL + imageUrl);
 
-
-        Picasso.with(this).load(uri) .into(imageView);
+        // download image from our database and put it into the imageview
+        Picasso.with(this).load(uri).into(mImageView);
 
     }
 

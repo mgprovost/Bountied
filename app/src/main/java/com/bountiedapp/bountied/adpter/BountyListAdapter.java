@@ -12,9 +12,12 @@ import com.bountiedapp.bountied.R;
 
 import java.util.ArrayList;
 
-/**
- * Created by mprovost on 7/16/2016.
- */
+/*************************************************************************
+ *  This is a Basic List Adapter, NOT to be used with a recycler view,
+ *  simply to be used with a simple listview.
+ *************************************************************************/
+
+
 public class BountyListAdapter extends ArrayAdapter<String> {
 
     private Context mContext;

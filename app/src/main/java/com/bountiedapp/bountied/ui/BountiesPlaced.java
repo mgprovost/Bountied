@@ -9,9 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
-import com.bountiedapp.bountied.DividerItemDecoration;
 import com.bountiedapp.bountied.DownloadBountyList;
 import com.bountiedapp.bountied.InternalReader;
 import com.bountiedapp.bountied.NetworkRequest;
@@ -26,23 +24,37 @@ import java.util.ArrayList;
 
 public class BountiesPlaced extends AppCompatActivity implements BountyPlacedAdapter.ItemClickCallback {
 
-    private static BountyPlacedAdapter mBountyPlacedAdapter;
-    private static RecyclerView recyclerView;
-    private ArrayList mBountyHuntListData;
-    private Gps gps;
+    // used for network requests
+    // the first one is for downloading all information on users placed bounties
+    // the second one is to delete a bounty from the database
+    private final String M_URL_PLACED_BOUNTIES = "http://192.168.1.8:3000/bountiesplaced";
+    private final String M_URL_DELETE = "http://192.168.1.8:3000/deletebounty";
 
     // these are just static strings used for the intents
+    // to send the all the foundID's to the possible found bounties page
     private static final String BUNDLE_EXTRAS = "BUNDLE_EXTRAS";
     private static final String EXTRA_FOUNDARRAY = "EXTRA_FOUNDARRAY";
 
-    private final String M_URL = "http://192.168.1.8:3000/bountiesplaced";
-    private final String M_URL_DELETE = "http://192.168.1.8:3000/deletebounty";
+    // bounty hunt adapter is to be used by the recycler view to set the view
+    // based on the information it's given
+    private static BountyPlacedAdapter mBountyPlacedAdapter;
+
+    // recycler view is used to display all the "cards" produced by the data
+    private static RecyclerView mRecyclerView;
+
+    // will hold the returned data from the server when it responds
+    private ArrayList mBountyHuntListData;
+
+    private Gps mGPS;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        // set the view from xml file
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bounties_placed);
 
+        // set the toolbar from the xml
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -50,10 +62,13 @@ public class BountiesPlaced extends AppCompatActivity implements BountyPlacedAda
         // android to display a return arrow to appear
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        // May need to load this in the launch screen initially
-        gps = new Gps(this);
+        // load a gps object which will begin updating coordinates as they become available
+        mGPS = new Gps(this);
 
-        recyclerView = (RecyclerView)findViewById(R.id.recycler_list_bounties_placed);
+        // get a reference to the recycler view from the xml
+        mRecyclerView = (RecyclerView)findViewById(R.id.recycler_list_bounties_placed);
+
+        // get all the relevant list data and load it into the recycler view assigned above
         getListData(this);
     }
 
@@ -98,43 +113,45 @@ public class BountiesPlaced extends AppCompatActivity implements BountyPlacedAda
         return super.onOptionsItemSelected(item);
     }
 
-
+    // grabs the list of data from the network
     public void getListData(final Context context) {
 
         // sets the last know user coords for gps
-        gps.setLastKnownLatLng(this);
+        mGPS.setLastKnownLatLng(this);
 
         // pull the users lat and lng coordinates to use them in the downloading of the relevant list
-        String mLat = Double.toString(gps.getmLat());
-        String mLng = Double.toString(gps.getmLng());
-
-        System.out.println("Latitude is:  " + mLat);
-        System.out.println("Longitude is:  " + mLng);
+        String mLat = Double.toString(mGPS.getLat());
+        String mLng = Double.toString(mGPS.getLng());
 
         // stops the gps from listening for new coords which is costly for battery life
-        gps.stopGps(this);
+        mGPS.stopGps(this);
 
+        // need to get the ID of this user from internal memory to download
+        // bounties placed specifically by this individual
         InternalReader internalReader = new InternalReader(this);
         String placerID = internalReader.readFromFile("ID");
-        System.out.println("PLACERID: " + placerID);
 
-
+        // asynchronously download all data on the bounties that were placed by this user
         try {
             DownloadBountyList downloadBountyList = new DownloadBountyList();
-            downloadBountyList.downloadPlaced(this, M_URL, placerID, new DownloadBountyList.VolleyCallback() {
+            downloadBountyList.downloadPlaced(this, M_URL_PLACED_BOUNTIES, placerID, new DownloadBountyList.VolleyCallback() {
                 @Override
                 public void onSuccess(ArrayList<BountyHuntListItem> result) {
 
+                    // this is the returned data from the server
                     mBountyHuntListData = result;
 
-                    recyclerView.setLayoutManager(new LinearLayoutManager(context));
+                    // layout manager takes care of the look of the layout
+                    mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
 
+                    // pass the returned data from the server to our adapter
                     mBountyPlacedAdapter = new BountyPlacedAdapter(result, context);
 
-                    recyclerView.setAdapter(mBountyPlacedAdapter);
+                    // pass our custom adapter, after it has been loaded with data, to the view
+                    mRecyclerView.setAdapter(mBountyPlacedAdapter);
 
                     // this basically says to Adapter when itemClickCallBack is called
-                    // ill (this Activity) will handle it
+                    // I (this Activity) will handle it
                     mBountyPlacedAdapter.setItemClickCallback(BountiesPlaced.this);
 
                 }
@@ -145,29 +162,37 @@ public class BountiesPlaced extends AppCompatActivity implements BountyPlacedAda
         }
     }
 
+    // if any of the cards, any part of the card except the button gets clicked, do the following
     @Override
     public void onItemClick(int position) {
+
+        // from the returned server data, get a single bounty hunt item / info associated with that item
         BountyHuntListItem bountyHuntListItem = (BountyHuntListItem) mBountyHuntListData.get(position);
 
+        // intent will be used to open the "possible bounty finds" activity if card is clicked
         Intent intent = new Intent(this, BountiesFound.class);
 
+        // put an array of all the found ID's to pass to next activity
         Bundle extras = new Bundle();
-
         extras.putCharSequenceArrayList(EXTRA_FOUNDARRAY, bountyHuntListItem.getFoundIDS());
-
-        System.out.println("FOUND ********: " + extras.toString());
 
         intent.putExtra(BUNDLE_EXTRAS, extras);
         startActivity(intent);
     }
 
+    // called when user clicks "delete" on the bounty card
+    // will delete the bounty from the server along with all hunts on this item
     @Override
-    public void onSecondaryIconClick(int position) {
+    public void onDeleteIconClick(int position) {
 
+        // from the returned server data, get a single bounty hunt item / info associated with that item
         BountyHuntListItem bountyHuntListItem = (BountyHuntListItem) mBountyHuntListData.get(position);
-        String bountyID = bountyHuntListItem.getmImageUrl();
 
-        System.out.println("DELETE THIS PLACED BOUNTY");
+        // get the bountyID of the card that is being clicked on
+        String bountyID = bountyHuntListItem.getImageUrl();
+
+        // asynchronously send a request to the server to delete a bounty
+        // along with any associated hunts on that bounty
         NetworkRequest networkRequest = new NetworkRequest();
 
         try {

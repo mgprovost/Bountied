@@ -9,20 +9,29 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
 
-/**
- * Created by androidtutorialpoint on 5/11/16.
- */
+/**************************************************************************
+ * The Network Singleton makes sense instead of instantiating a new
+ * object everytime we need to make a request.  Since we are consistantly
+ * making network requests, the singleton pattern allows efficiency
+ * and minimal overhead.  A single instance of this lasts the lifetime
+ * of the app.  Basic implementation recommended by Google.
+ **************************************************************************/
+
 public class NetworkSingleton {
 
     private static NetworkSingleton mNetworkSingletonInstance;
-    private RequestQueue mRequestQueue;
-    private ImageLoader mImageLoader;
     private static Context mContext;
 
+    private RequestQueue mRequestQueue;
+    private ImageLoader mImageLoader;
+
+
     private NetworkSingleton(Context context) {
+
         mContext = context;
         mRequestQueue = getRequestQueue();
 
+        // used for caching images
         mImageLoader = new ImageLoader(mRequestQueue,
                 new ImageLoader.ImageCache() {
                     private final LruCache<String, Bitmap>
@@ -40,6 +49,7 @@ public class NetworkSingleton {
                 });
     }
 
+    // a single instantce of the network singleton
     public static synchronized NetworkSingleton getInstance(Context context) {
         if (mNetworkSingletonInstance == null) {
             mNetworkSingletonInstance = new NetworkSingleton(context);
@@ -47,6 +57,7 @@ public class NetworkSingleton {
         return mNetworkSingletonInstance;
     }
 
+    // get the request queue
     public RequestQueue getRequestQueue() {
         if (mRequestQueue == null) {
             // getApplicationContext() is key, it keeps you from leaking the
@@ -56,6 +67,7 @@ public class NetworkSingleton {
         return mRequestQueue;
     }
 
+    // add a request to the queue
     public <T> void addToRequestQueue(Request<T> req,String tag) {
         req.setTag(tag);
         getRequestQueue().add(req);

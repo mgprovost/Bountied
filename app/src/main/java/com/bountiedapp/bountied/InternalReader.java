@@ -1,7 +1,6 @@
 package com.bountiedapp.bountied;
 
 import android.content.Context;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -10,9 +9,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-/**
- * Created by mprovost on 8/11/2016.
- */
+/***************************************************
+ * The Internal Reader Class was created to easily
+ * read data from internal memory
+ ***************************************************/
+
 public class InternalReader {
 
     private Context mContext;
@@ -24,7 +25,7 @@ public class InternalReader {
     // read a string of data from a file saved in internal memory
     public String readFromFile(String filename) {
 
-        String ret = "";
+        String returnString = "";
 
         try {
             InputStream inputStream = mContext.openFileInput(filename);
@@ -40,16 +41,16 @@ public class InternalReader {
                 }
 
                 inputStream.close();
-                ret = stringBuilder.toString();
+                returnString = stringBuilder.toString();
             }
         }
         catch (FileNotFoundException e) {
-            Log.e("login activity", "File not found: " + e.toString());
+            Log.e("internal reader", "File not found: " + e.toString());
         } catch (IOException e) {
-            Log.e("login activity", "Can not read file: " + e.toString());
+            Log.e("internal reader", "Can not read file: " + e.toString());
         }
 
-        return ret;
+        return returnString;
     }
 
 }
