@@ -17,6 +17,7 @@ import com.bountiedapp.bountied.R;
 import com.bountiedapp.bountied.adpter.BountyHuntsInProgressAdapter;
 import com.bountiedapp.bountied.model.BountyHuntListItem;
 import com.bountiedapp.bountied.model.Gps;
+import com.bountiedapp.bountied.model.StaticStrings;
 
 import org.json.JSONException;
 
@@ -26,7 +27,7 @@ import java.util.Arrays;
 public class HuntsInProgress extends AppCompatActivity implements BountyHuntsInProgressAdapter.ItemClickCallback {
 
     // endpoint to send information to the server
-    private final String M_URL = "http://192.168.1.8:3000/bountiesinprogress";
+    private final String M_URL = StaticStrings.BASE_URL + "bountiesinprogress";
 
     // constant used when returning to the activity from the camera intent
     private int REQUEST_IMAGE_CAPTURE = 1;
@@ -110,7 +111,7 @@ public class HuntsInProgress extends AppCompatActivity implements BountyHuntsInP
                 startActivity(placeIntent);
                 return true;
             case R.id.action_hunt:
-                Intent huntIntent = new Intent(this, BountyHuntActivity.class);
+                Intent huntIntent = new Intent(this, BountyHunt.class);
                 startActivity(huntIntent);
                 return true;
             case R.id.action_placed:
@@ -268,7 +269,8 @@ public class HuntsInProgress extends AppCompatActivity implements BountyHuntsInP
         String removeRightBracket = removeLeftBracket.replace("]", "");
         String stringWithRemoval = removeRightBracket.replace(" ", "");
 
-        // split the string on all "," in it and then make each of those strings elements in array and return it
+        // split the string on all "," in it and then make each
+        // of those strings elements in array and return it
         return new ArrayList<String>(Arrays.asList(stringWithRemoval.split(",")));
     }
 

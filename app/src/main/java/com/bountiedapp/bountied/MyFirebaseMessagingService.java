@@ -11,7 +11,7 @@ import android.support.v7.app.NotificationCompat;
 
 
 import com.bountiedapp.bountied.ui.BountiesFound;
-import com.bountiedapp.bountied.ui.HomeActivity;
+import com.bountiedapp.bountied.ui.Home;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -141,7 +141,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private void sendNotification(String messageBody) {
 
         // send user to the Home activity if they tap the notification
-        Intent intent = new Intent(this, HomeActivity.class);
+        Intent intent = new Intent(this, Home.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), intent,
                 PendingIntent.FLAG_ONE_SHOT);

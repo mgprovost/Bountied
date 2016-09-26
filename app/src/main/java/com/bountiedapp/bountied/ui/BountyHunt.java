@@ -15,7 +15,7 @@ import com.bountiedapp.bountied.R;
 
 import java.util.ArrayList;
 
-public class BountyHuntActivity extends AppCompatActivity {
+public class BountyHunt extends AppCompatActivity {
 
     // list to store the string categories in
     ArrayList mCatagoryList;
@@ -71,7 +71,7 @@ public class BountyHuntActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
 
-                Intent intent = new Intent(BountyHuntActivity.this, BountyHuntCatagoryActivity.class);
+                Intent intent = new Intent(BountyHunt.this, BountyHuntCatagory.class);
 
                 // whatever category is selected from the list, send that to the next activity
                 String catagory = (String) mCatagoryList.get(position);
@@ -107,7 +107,7 @@ public class BountyHuntActivity extends AppCompatActivity {
                 startActivity(placeIntent);
                 return true;
             case R.id.action_hunt:
-                Intent huntIntent = new Intent(this, BountyHuntActivity.class);
+                Intent huntIntent = new Intent(this, BountyHunt.class);
                 startActivity(huntIntent);
                 return true;
             case R.id.action_placed:

@@ -19,6 +19,7 @@ import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.bountiedapp.bountied.NetworkSingleton;
 import com.bountiedapp.bountied.R;
+import com.bountiedapp.bountied.model.StaticStrings;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,7 +27,7 @@ import org.json.JSONObject;
 public class Register extends AppCompatActivity {
 
     // endpoint to send information to the server
-    private String UPLOAD_URL ="http://192.168.1.8:3000/register";
+    private String UPLOAD_URL = StaticStrings.BASE_URL + "register";
 
     // Tag used for network requests
     private String TAG = "registration_upload_request";

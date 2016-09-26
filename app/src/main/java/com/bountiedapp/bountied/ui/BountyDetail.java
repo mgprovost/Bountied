@@ -14,13 +14,14 @@ import android.view.animation.AnimationUtils;
 import android.widget.*;
 
 import com.bountiedapp.bountied.*;
+import com.bountiedapp.bountied.model.StaticStrings;
 import com.squareup.picasso.Picasso;
 
 
-public class HomeDetailActivity extends AppCompatActivity implements View.OnClickListener {
+public class BountyDetail extends AppCompatActivity implements View.OnClickListener {
 
     // endpoint to get information from the server
-    private static final String BOUNTY_IMAGES_BASE_URL = "http://192.168.1.8:3000/images/";
+    private static final String BOUNTY_IMAGES_BASE_URL = StaticStrings.BASE_URL + "images/";
 
     // constant used when returning to the activity from the camera intent
     private int REQUEST_IMAGE_CAPTURE = 1;
@@ -142,7 +143,7 @@ public class HomeDetailActivity extends AppCompatActivity implements View.OnClic
                 startActivity(placeIntent);
                 return true;
             case R.id.action_hunt:
-                Intent huntIntent = new Intent(this, BountyHuntActivity.class);
+                Intent huntIntent = new Intent(this, BountyHunt.class);
                 startActivity(huntIntent);
                 return true;
             case R.id.action_placed:

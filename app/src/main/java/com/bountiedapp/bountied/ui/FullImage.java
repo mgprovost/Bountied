@@ -10,15 +10,16 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 
 import com.bountiedapp.bountied.R;
+import com.bountiedapp.bountied.model.StaticStrings;
 import com.squareup.picasso.Picasso;
 
 /**
  * Created by mprovost on 8/26/2016.
  */
-public class FullImageActivity extends AppCompatActivity {
+public class FullImage extends AppCompatActivity {
 
     // endpoint on our server where the possible found images are stored
-    private static final String M_BOUNTY_IMAGES_BASE_URL = "http://192.168.1.8:3000/foundimages/";
+    private static final String M_BOUNTY_IMAGES_BASE_URL = StaticStrings.BASE_URL + "foundimages/";
 
     // these are just static strings used to get imageurl data from intent
     private static final String BUNDLE_EXTRAS = "BUNDLE_EXTRAS";
@@ -83,7 +84,7 @@ public class FullImageActivity extends AppCompatActivity {
                 startActivity(placeIntent);
                 return true;
             case R.id.action_hunt:
-                Intent huntIntent = new Intent(this, BountyHuntActivity.class);
+                Intent huntIntent = new Intent(this, BountyHunt.class);
                 startActivity(huntIntent);
                 return true;
             case R.id.action_placed:

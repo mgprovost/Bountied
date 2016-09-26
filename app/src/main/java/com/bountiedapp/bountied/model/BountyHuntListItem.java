@@ -136,7 +136,6 @@ public class BountyHuntListItem {
     }
 
     // get an array list from a string
-    // this return an arraylist from the downloaded "found" string format
     private ArrayList getArrayFromString(String someString) {
 
         // remove the left bracket, then right bracket, then all spaces from the string
@@ -144,7 +143,8 @@ public class BountyHuntListItem {
         String removeRightBracket = removeLeftBracket.replace("]", "");
         String stringWithRemoval = removeRightBracket.replace(" ", "");
 
-        // split the string on all "," in it and then make each of those strings elements in array and return it
+        // split the string on all "," in it and then make each
+        // of those strings elements in array and return it
         return new ArrayList<String>(Arrays.asList(stringWithRemoval.split(",")));
     }
 

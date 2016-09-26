@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.bountiedapp.bountied.R;
 import com.bountiedapp.bountied.model.BountyHuntListItem;
+import com.bountiedapp.bountied.model.StaticStrings;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -34,7 +35,7 @@ import java.util.List;
 public class BountyPlacedAdapter extends RecyclerView.Adapter<BountyPlacedAdapter.BountyHuntHolder>{
 
     // endpoint on server to find all possible found images
-    private static final String BOUNTY_IMAGES_BASE_URL = "http://192.168.1.8:3000/images/";
+    private static final String BOUNTY_IMAGES_BASE_URL = StaticStrings.BASE_URL + "images/";
 
     // this is the list data passed in through "recyclerview.setAdapter(adapter)" in the activity
     private List<BountyHuntListItem> bountyHuntListData;

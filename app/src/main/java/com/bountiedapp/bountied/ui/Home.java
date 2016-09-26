@@ -17,15 +17,16 @@ import com.bountiedapp.bountied.R;
 import com.bountiedapp.bountied.adpter.BountyHuntAdapter;
 import com.bountiedapp.bountied.model.BountyHuntListItem;
 import com.bountiedapp.bountied.model.Gps;
+import com.bountiedapp.bountied.model.StaticStrings;
 
 import org.json.JSONException;
 
 import java.util.ArrayList;
 
-public class HomeActivity extends AppCompatActivity implements BountyHuntAdapter.ItemClickCallback {
+public class Home extends AppCompatActivity implements BountyHuntAdapter.ItemClickCallback {
 
     // endpoint to send information to the server
-    private final String M_URL = "http://192.168.1.8:3000/bountylistdownload";
+    private final String M_URL = StaticStrings.BASE_URL + "bountylistdownload";
 
     // constant used when returning to the activity from the camera intent
     private int REQUEST_IMAGE_CAPTURE = 1;
@@ -104,7 +105,7 @@ public class HomeActivity extends AppCompatActivity implements BountyHuntAdapter
                 startActivity(placeIntent);
                 return true;
             case R.id.action_hunt:
-                Intent huntIntent = new Intent(this, BountyHuntActivity.class);
+                Intent huntIntent = new Intent(this, BountyHunt.class);
                 startActivity(huntIntent);
                 return true;
             case R.id.action_placed:
@@ -162,7 +163,7 @@ public class HomeActivity extends AppCompatActivity implements BountyHuntAdapter
 
                     // this basically says to Adapter when itemClickCallBack is called
                     // I (this Activity) will handle it
-                    mBountyHuntAdapter.setItemClickCallback(HomeActivity.this);
+                    mBountyHuntAdapter.setItemClickCallback(Home.this);
 
                 }
             });
@@ -180,7 +181,7 @@ public class HomeActivity extends AppCompatActivity implements BountyHuntAdapter
         BountyHuntListItem bountyHuntListItem = (BountyHuntListItem) mBountyHuntListData.get(position);
 
         // intent will be used to open the detail activity if card is clicked
-        Intent intent = new Intent(this, HomeDetailActivity.class);
+        Intent intent = new Intent(this, BountyDetail.class);
 
         // put all the following info in a bundle to send it to detail activity
         Bundle extras = new Bundle();

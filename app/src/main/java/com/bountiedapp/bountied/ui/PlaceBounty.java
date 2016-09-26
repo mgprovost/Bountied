@@ -25,6 +25,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bountiedapp.bountied.Upload;
 import com.bountiedapp.bountied.ImageConverter;
@@ -62,11 +63,12 @@ public class PlaceBounty extends AppCompatActivity implements View.OnClickListen
     private Animation rotate_backward;
 
     // used in the spinner
-    String mCategories[] = { "Catagory", "PEOPLE", "PLACES", "THINGS", "AUTOMOTIVE",
+    String mCategories[] = { "Category", "PEOPLE", "PLACES", "THINGS", "AUTOMOTIVE",
             "ANIMALS", "COLLECTABLES", "FASHION", "FOOD/BEVERAGE", "RESTURANTS/BARS", "SERVICES" };
 
 
     private Gps mGPS;
+    private boolean mImageSelected;
 
     // UI elements
     private TextView mImageText;
@@ -111,6 +113,9 @@ public class PlaceBounty extends AppCompatActivity implements View.OnClickListen
 
         // load a gps object which will begin updating coordinates as they become available
         mGPS = new Gps(this);
+
+        // user has not yet selected an image
+        mImageSelected = false;
 
         // get references to UI elements
         mImageText = (TextView) findViewById(R.id.place_image_text);
@@ -190,7 +195,7 @@ public class PlaceBounty extends AppCompatActivity implements View.OnClickListen
                 startActivity(placeIntent);
                 return true;
             case R.id.action_hunt:
-                Intent huntIntent = new Intent(this, BountyHuntActivity.class);
+                Intent huntIntent = new Intent(this, BountyHunt.class);
                 startActivity(huntIntent);
                 return true;
             case R.id.action_placed:
@@ -252,7 +257,8 @@ public class PlaceBounty extends AppCompatActivity implements View.OnClickListen
             // sets the last know user coords for gps
             mGPS.setLastKnownLatLng(mContext);
 
-            // pull the users lat and lng coordinates to use them in the downloading of the relevant list
+            // pull the users lat and lng coordinates to use
+            // them in the downloading of the relevant list
             String lat = Double.toString(mGPS.getLat());
             String lng = Double.toString(mGPS.getLng());
 
@@ -262,7 +268,8 @@ public class PlaceBounty extends AppCompatActivity implements View.OnClickListen
             // create a new "POJO" bounty to send to the server
             Bounty bounty = new Bounty(title, description, bountyAmount, radius, mCategory, lat, lng, imageAsString, username, placerID);
 
-            // use upload class to send network request to send bounty along with image as base64 encoded string
+            // use upload class to send network request to send
+            // bounty along with image as base64 encoded string
             try {
                 Upload upload = new Upload();
                 upload.bountyPlaced(mContext, bounty);
@@ -285,6 +292,9 @@ public class PlaceBounty extends AppCompatActivity implements View.OnClickListen
 
         // if everything is ok with the image picking then do the following
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+
+            // the user selected an image
+            mImageSelected = true;
 
             // this will get rid of the placeholder text telling the user to select an image
             mImageText.setVisibility(View.GONE);
@@ -322,6 +332,9 @@ public class PlaceBounty extends AppCompatActivity implements View.OnClickListen
 
         // if everything is ok with the camera activity
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+
+            // the user selected an image
+            mImageSelected = true;
 
             // this will get rid of the placeholder text telling the user to select an image
             mImageText.setVisibility(View.GONE);
@@ -437,7 +450,8 @@ public class PlaceBounty extends AppCompatActivity implements View.OnClickListen
 
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "IMAGE_" + timeStamp + "_";
-        File storageDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        File storageDirectory =
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
 
         File image = File.createTempFile(imageFileName, ".jpg", storageDirectory);
 
@@ -488,11 +502,20 @@ public class PlaceBounty extends AppCompatActivity implements View.OnClickListen
         }
         if (!vadidRadius(radius)) {
             // set the text to red and to say must enter a valid...
-            mRadiusText.setHint("You need to enter a valid integer radius amount in miles (i.e. 15)");
+            mRadiusText.setHint("You need to enter a valid integer amount in miles (i.e. 15)");
             mRadiusText.setHintTextColor(Color.RED);
             allValid = false;
         }
-
+        if (!vadidImage()) {
+            // show the user an invalid toast message...
+            Toast.makeText(this, "You need to select or take an image.", Toast.LENGTH_SHORT).show();
+            allValid = false;
+        }
+        if (!vadidCategory()) {
+            // show the user an invalid toast message...
+            Toast.makeText(this, "You need to select a category.", Toast.LENGTH_SHORT).show();
+            allValid = false;
+        }
         // if all fields are valid return true, otherwise return false
         if (allValid) {
             return true;
@@ -546,6 +569,20 @@ public class PlaceBounty extends AppCompatActivity implements View.OnClickListen
             return true;
         }
         return false;
+    }
+
+    private boolean vadidImage() {
+        if (mImageSelected == false) {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean vadidCategory() {
+        if (mCategory == "Category") {
+            return false;
+        }
+        return true;
     }
 
 }

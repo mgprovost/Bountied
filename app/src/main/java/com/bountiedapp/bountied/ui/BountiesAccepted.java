@@ -18,6 +18,7 @@ import com.bountiedapp.bountied.NetworkRequest;
 import com.bountiedapp.bountied.R;
 import com.bountiedapp.bountied.adpter.BountyAcceptedAdapter;
 import com.bountiedapp.bountied.model.BountyHuntListItem;
+import com.bountiedapp.bountied.model.StaticStrings;
 
 import org.json.JSONException;
 
@@ -26,10 +27,10 @@ import java.util.ArrayList;
 public class BountiesAccepted extends AppCompatActivity implements BountyAcceptedAdapter.ItemClickCallback {
 
     // endpoint on our server to download all bounties the user has accepted to date
-    private final String M_URL_ACCEPTED = "http://192.168.1.8:3000/downloadbountiesaccepted";
+    private final String M_URL_ACCEPTED = StaticStrings.BASE_URL + "downloadbountiesaccepted";
 
     // endpoint on our server to delete any accepted bounties from the database
-    private final String M_URL_DELETE = "http://192.168.1.8:3000/deleteaccepted";
+    private final String M_URL_DELETE = StaticStrings.BASE_URL + "deleteaccepted";
 
     // bounty accepted adapter is to be used by the recycler view to set the view
     // based on the information it's given
@@ -86,7 +87,7 @@ public class BountiesAccepted extends AppCompatActivity implements BountyAccepte
                 startActivity(placeIntent);
                 return true;
             case R.id.action_hunt:
-                Intent huntIntent = new Intent(this, BountyHuntActivity.class);
+                Intent huntIntent = new Intent(this, BountyHunt.class);
                 startActivity(huntIntent);
                 return true;
             case R.id.action_placed:
@@ -149,14 +150,16 @@ public class BountiesAccepted extends AppCompatActivity implements BountyAccepte
     @Override
     public void onMapClick(int position) {
 
-        // from the returned server data, get a single bounty hunt item / info associated with that item
+        // from the returned server data, get a
+        // single bounty hunt item / info associated with that item
         BountyHuntListItem bountyHuntListItem = (BountyHuntListItem) mBountyHuntListData.get(position);
 
         String foundLat = bountyHuntListItem.getFoundLat();
         String foundLng = bountyHuntListItem.getFoundLng();
 
         // set a map query for google maps that includes the lat and lng of where the bounty was found
-        String mapQuery = "geo:0,0?q=" + foundLat + "," + foundLng + "(" + "Your bounty was found at this location." + ")";
+        String mapQuery = "geo:0,0?q=" + foundLat + "," + foundLng +
+                "(" + "Your bounty was found at this location." + ")";
 
         // get ready to open google maps with a URI and an intent
         Uri gmmIntentUri = Uri.parse(mapQuery);

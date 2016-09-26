@@ -11,7 +11,9 @@ public class FoundBounty {
     private String lat;
     private String lng;
 
-    public FoundBounty(String placerID, String bountyID, String finderID, String imageAsString, String lat, String lng) {
+    public FoundBounty(String placerID, String bountyID,
+                       String finderID, String imageAsString,
+                       String lat, String lng) {
         this.placerID = placerID;
         this.bountyID = bountyID;
         this.finderID = finderID;

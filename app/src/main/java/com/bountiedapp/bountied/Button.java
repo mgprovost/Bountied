@@ -188,7 +188,8 @@ public class Button {
         String removeRightBracket = removeLeftBracket.replace("]", "");
         String stringWithRemoval = removeRightBracket.replace(" ", "");
 
-        // split the string on all "," in it and then make each of those strings elements in array and return it
+        // split the string on all "," in it and then make
+        // each of those strings elements in array and return it
         return new ArrayList<String>(Arrays.asList(stringWithRemoval.split(",")));
     }
 

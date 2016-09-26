@@ -17,6 +17,7 @@ import com.bountiedapp.bountied.R;
 import com.bountiedapp.bountied.adpter.BountyPlacedAdapter;
 import com.bountiedapp.bountied.model.BountyHuntListItem;
 import com.bountiedapp.bountied.model.Gps;
+import com.bountiedapp.bountied.model.StaticStrings;
 
 import org.json.JSONException;
 
@@ -27,8 +28,8 @@ public class BountiesPlaced extends AppCompatActivity implements BountyPlacedAda
     // used for network requests
     // the first one is for downloading all information on users placed bounties
     // the second one is to delete a bounty from the database
-    private final String M_URL_PLACED_BOUNTIES = "http://192.168.1.8:3000/bountiesplaced";
-    private final String M_URL_DELETE = "http://192.168.1.8:3000/deletebounty";
+    private final String M_URL_PLACED_BOUNTIES = StaticStrings.BASE_URL + "bountiesplaced";
+    private final String M_URL_DELETE = StaticStrings.BASE_URL + "deletebounty";
 
     // these are just static strings used for the intents
     // to send the all the foundID's to the possible found bounties page
@@ -94,7 +95,7 @@ public class BountiesPlaced extends AppCompatActivity implements BountyPlacedAda
                 startActivity(placeIntent);
                 return true;
             case R.id.action_hunt:
-                Intent huntIntent = new Intent(this, BountyHuntActivity.class);
+                Intent huntIntent = new Intent(this, BountyHunt.class);
                 startActivity(huntIntent);
                 return true;
             case R.id.action_placed:

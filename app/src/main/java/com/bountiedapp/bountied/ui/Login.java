@@ -20,6 +20,7 @@ import com.bountiedapp.bountied.InternalReader;
 import com.bountiedapp.bountied.InternalWriter;
 import com.bountiedapp.bountied.NetworkSingleton;
 import com.bountiedapp.bountied.R;
+import com.bountiedapp.bountied.model.StaticStrings;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,7 +29,7 @@ import org.json.JSONObject;
 public class Login extends AppCompatActivity {
 
     // endpoint to send information to the server
-    private String UPLOAD_URL ="http://192.168.1.8:3000/login";
+    private String UPLOAD_URL = StaticStrings.BASE_URL + "login";
 
     // tag used for network request
     private String TAG = "registration_upload_request";
@@ -64,14 +65,16 @@ public class Login extends AppCompatActivity {
         mUsernameTextField = (EditText)findViewById(R.id.login_username);
         mPasswordTextField = (EditText)findViewById(R.id.login_password);
 
-        // get the username and password as bundled extras if we are coming from the registration activity
+        // get the username and password as bundled extras
+        // if we are coming from the registration activity
         // otherwise you will end up with null in the extras
         Bundle extras = getIntent().getBundleExtra(BUNDLE_EXTRAS);
 
         // if the user just registered then there will be a username and
         // password bundled in to automatically log that user in
         if (extras != null) {
-            // get the username and password passed in and verified from the registration activity
+            // get the username and password passed in
+            // and verified from the registration activity
             String username = extras.getString(EXTRA_USERNAME);
             String password = extras.getString(EXTRA_PASSWORD);
 
@@ -97,7 +100,8 @@ public class Login extends AppCompatActivity {
                 String userName = mUsernameTextField.getText().toString();
                 String password = mPasswordTextField.getText().toString();
 
-                // validate all the text fields to the extent that it can be done before the server validates it
+                // validate all the text fields to the extent that
+                // it can be done before the server validates it
                 boolean fieldsAreValid = validateFields(userName, password);
 
                 // if all fields are valid then send it to the server
@@ -204,7 +208,7 @@ public class Login extends AppCompatActivity {
 
     private void startHomeActivity(Context context) {
         // go to the home activity
-        Intent intent = new Intent(context, HomeActivity.class);
+        Intent intent = new Intent(context, Home.class);
         startActivity(intent);
     }
 

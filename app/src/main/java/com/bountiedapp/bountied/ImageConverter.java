@@ -50,7 +50,7 @@ public class ImageConverter {
 
         // we need a scale factor because send a massive original size image
         // is too expensive to continuously send to back and forth from our database
-        int scaleFactor = Math.max(cameraImageWidth/ 800, cameraImageHeight/ 800);
+        int scaleFactor = Math.max(cameraImageWidth/ 400, cameraImageHeight/ 400 );
 
         // If set to a value > 1, requests the decoder to subsample the
         // original image, returning a smaller image to save memory.

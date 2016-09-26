@@ -19,6 +19,7 @@ import java.util.Map;
 
 import com.bountiedapp.bountied.model.Bounty;
 import com.bountiedapp.bountied.model.FoundBounty;
+import com.bountiedapp.bountied.model.StaticStrings;
 
 /***************************************************************************
  * Upload class is specifically created for uploading data to the server
@@ -27,8 +28,8 @@ import com.bountiedapp.bountied.model.FoundBounty;
 public class Upload extends Application {
 
     // endpoints on the server where a bounty can be placed or a possible find can be placed
-    private String BOUNTY_PLACED_URL ="http://192.168.1.8:3000/placebounty";
-    private String FOUND_BOUNTY_URL ="http://192.168.1.8:3000/foundbounty";
+    private String BOUNTY_PLACED_URL = StaticStrings.BASE_URL + "placebounty";
+    private String FOUND_BOUNTY_URL = StaticStrings.BASE_URL + "foundbounty";
 
     // Tag used to cancel the request
     private String TAG = "bounty_upload_request";

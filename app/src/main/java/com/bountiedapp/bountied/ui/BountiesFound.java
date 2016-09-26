@@ -16,6 +16,7 @@ import com.bountiedapp.bountied.R;
 import com.bountiedapp.bountied.adpter.BountiesFoundAdapter;
 import com.bountiedapp.bountied.model.BountyFoundListItem;
 import com.bountiedapp.bountied.model.Gps;
+import com.bountiedapp.bountied.model.StaticStrings;
 
 import org.json.JSONException;
 
@@ -24,11 +25,11 @@ import java.util.ArrayList;
 public class BountiesFound extends AppCompatActivity implements BountiesFoundAdapter.ItemClickCallback {
 
     // endpoint to get data from the server
-    private final String M_URL_DOWNLOAD = "http://192.168.1.8:3000/downloadbountiesfound";
+    private final String M_URL_DOWNLOAD = StaticStrings.BASE_URL + "downloadbountiesfound";
 
     // endpoints to send data to the server
-    private final String M_URL_ACCEPT = "http://192.168.1.8:3000/acceptbounty";
-    private final String M_URL_DECLINE = "http://192.168.1.8:3000/declinebounty";
+    private final String M_URL_ACCEPT = StaticStrings.BASE_URL + "acceptbounty";
+    private final String M_URL_DECLINE = StaticStrings.BASE_URL + "declinebounty";
 
     // these are just static strings used to get data
     // from the previous activity as well as send data
@@ -102,7 +103,7 @@ public class BountiesFound extends AppCompatActivity implements BountiesFoundAda
                 startActivity(placeIntent);
                 return true;
             case R.id.action_hunt:
-                Intent huntIntent = new Intent(this, BountyHuntActivity.class);
+                Intent huntIntent = new Intent(this, BountyHunt.class);
                 startActivity(huntIntent);
                 return true;
             case R.id.action_placed:
@@ -173,7 +174,7 @@ public class BountiesFound extends AppCompatActivity implements BountiesFoundAda
         BountyFoundListItem bountyFoundListItem = (BountyFoundListItem) mBountyFoundListData.get(position);
 
         // intent will be used to open the detail - full image - activity if card is clicked
-        Intent intent = new Intent(this, FullImageActivity.class);
+        Intent intent = new Intent(this, FullImage.class);
 
         // put all the following info in a bundle to send it to detail - full image - activity
         Bundle extras = new Bundle();
