@@ -29,6 +29,7 @@
         android:layout_centerVertical="true"
         android:layout_marginTop="100dp"
         android:hint="Username"
+        android:maxLength="20"
         android:fontFamily="sans-serif-thin"/>
 
     <EditText
@@ -38,6 +39,7 @@
         android:layout_centerHorizontal="true"
         android:ems="10"
         android:hint="Password"
+        android:maxLength="20"
         android:fontFamily="sans-serif-thin"
         android:inputType="textPassword" />
 
@@ -47,8 +49,8 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:hint="Email"
-        android:fontFamily="sans-serif-thin"
-        android:inputType="textPassword" />
+        android:maxLength="40"
+        android:fontFamily="sans-serif-thin"   />
 
     <Button
         android:id="@+id/register_submit"

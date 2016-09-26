@@ -29,6 +29,7 @@
         android:layout_centerVertical="true"
         android:layout_marginTop="100dp"
         android:fontFamily="sans-serif-thin"
+        android:maxLength="20"
         android:hint="Username" />
 
     <EditText
@@ -40,6 +41,7 @@
         android:layout_below="@+id/login_username"
         android:layout_centerHorizontal="true"
         android:fontFamily="sans-serif-thin"
+        android:maxLength="20"
         android:hint="Password"/>
 
     <Button

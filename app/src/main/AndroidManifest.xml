@@ -32,44 +32,44 @@
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
-            android:name=".ui.HomeActivity"
+            android:name=".ui.Home"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".ui.PlaceBounty"
             android:label="@string/title_activity_place_bounty"
-            android:parentActivityName=".ui.HomeActivity"
+            android:parentActivityName=".ui.Home"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.HomeActivity" />
+                android:value=".ui.Home" />
         </activity>
         <activity
-            android:name=".ui.BountyHuntActivity"
+            android:name=".ui.BountyHunt"
             android:label="@string/title_activity_view_bounty"
-            android:parentActivityName=".ui.HomeActivity"
+            android:parentActivityName=".ui.Home"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.HomeActivity" />
+                android:value=".ui.Home" />
         </activity>
         <activity
-            android:name=".ui.HomeDetailActivity"
+            android:name=".ui.BountyDetail"
             android:label="BOUNTY DETAIL"
-            android:parentActivityName=".ui.HomeActivity"
+            android:parentActivityName=".ui.Home"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.HomeActivity" />
+                android:value=".ui.Home" />
         </activity>
         <activity
             android:name=".ui.HuntsInProgress"
             android:label="@string/bounty_hunts_in_progress"
-            android:parentActivityName=".ui.HomeActivity"
+            android:parentActivityName=".ui.Home"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.HomeActivity" />
+                android:value=".ui.Home" />
         </activity>
         <activity
             android:name=".ui.HuntsInProgressDetail"
@@ -81,22 +81,22 @@
                 android:value=".ui.HuntsInProgress" />
         </activity>
         <activity
-            android:name=".ui.BountyHuntCatagoryActivity"
+            android:name=".ui.BountyHuntCatagory"
             android:label="Single Catagory"
-            android:parentActivityName=".ui.BountyHuntActivity"
+            android:parentActivityName=".ui.BountyHunt"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.BountyHuntActivity" />
+                android:value=".ui.BountyHunt" />
         </activity>
         <activity
             android:name=".ui.BountiesPlaced"
             android:label="@string/bounty_placed_in_progress"
-            android:parentActivityName=".ui.HomeActivity"
+            android:parentActivityName=".ui.Home"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.HomeActivity" />
+                android:value=".ui.Home" />
         </activity>
         <activity
             android:name=".ui.BountiesFound"
@@ -110,14 +110,14 @@
         <activity
             android:name=".ui.BountiesAccepted"
             android:label="ACCEPTED BOUNTIES"
-            android:parentActivityName=".ui.HomeActivity"
+            android:parentActivityName=".ui.Home"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.HomeActivity" />
+                android:value=".ui.Home" />
         </activity>
         <activity
-            android:name=".ui.FullImageActivity"
+            android:name=".ui.FullImage"
             android:label="FULL IMAGE"
             android:parentActivityName=".ui.BountiesFound"
             android:theme="@style/AppTheme.NoActionBar">
